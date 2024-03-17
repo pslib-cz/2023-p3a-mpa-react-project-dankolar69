@@ -1,19 +1,22 @@
+
 import React, { useState, useEffect, useRef } from 'react';
+import Bullet from './components/Bullet';
+import Asteroid from './components/Asteroid';
+import Player from './components/Player';
+
+
 
 type Position = {
   x: number;
   y: number;
 };
 
-type Asteroid = Position;
-type Bullet = Position;
-
 const App: React.FC = () => {
-  const playerPosition = useRef<Position>({ x: 0, y: 0 });
-  const [asteroids, setAsteroids] = useState<Asteroid[]>([]);
-  const [bullets, setBullets] = useState<Bullet[]>([]);
+  const playerPosition = useRef<Position>({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const [asteroids, setAsteroids] = useState<Position[]>([]);
+  const [bullets, setBullets] = useState<Position[]>([]);
   const [gameOver, setGameOver] = useState(false);
-  
+
   const handleKeyDown = (event: KeyboardEvent) => {
     switch (event.key) {
       case 'ArrowUp':
@@ -98,7 +101,7 @@ const App: React.FC = () => {
     );
   
       if (Math.random() < 0.10) {
-        const newAsteroid: Asteroid = {
+        const newAsteroid = {
           x: Math.random() * window.innerWidth,
           y: 0,
         };
@@ -112,54 +115,24 @@ const App: React.FC = () => {
     return <div>Game Over</div>;
   }
 
-  
   return (
     <div
       style={{
         position: 'fixed', 
-      top: 0, 
-      left: 0, 
-      height: '100vh',
-      width: '100vw',
-      backgroundColor: 'black',
-      overflow: 'hidden'
+        top: 0, 
+        left: 0, 
+        height: '100vh',
+        width: '100vw',
+        backgroundColor: 'black',
+        overflow: 'hidden'
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: playerPosition.current.y,
-          left: playerPosition.current.x,
-          height: '50px',
-          width: '50px',
-          backgroundColor: 'white',
-        }}
-      />
+      <Player position={playerPosition.current} />
       {asteroids.map((asteroid, index) => (
-        <div
-          key={index}
-          style={{
-            position: 'absolute',
-            top: asteroid.y,
-            left: asteroid.x,
-            height: '50px',
-            width: '50px',
-            backgroundColor: 'gray',
-          }}
-        />
+        <Asteroid key={index} position={asteroid} />
       ))}
       {bullets.map((bullet, index) => (
-        <div
-          key={index}
-          style={{
-            position: 'absolute',
-            top: bullet.y,
-            left: bullet.x,
-            height: '10px',
-            width: '10px',
-            backgroundColor: 'white',
-          }}
-        />
+        <Bullet key={index} position={bullet} />
       ))}
     </div>
   );
