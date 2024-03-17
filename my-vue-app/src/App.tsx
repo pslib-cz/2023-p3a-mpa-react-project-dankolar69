@@ -88,7 +88,7 @@ const App: React.FC = () => {
             bullet.y < asteroid.y + 50 &&
             bullet.y + 10 > asteroid.y
           ) {
-            // Collision detected, remove the asteroid
+            
             setAsteroids((prevAsteroids) => prevAsteroids.filter((_, index) => index !== i));
             return false;
           }
