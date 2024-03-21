@@ -2,14 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import Bullet from './Bullet';
 import Asteroid from './Asteroid';
 import Player from './Player';
+import asteroid1 from "../assets/images/asteroid1.png";
+import asteroid2 from "../assets/images/asteroid2.png";
+import Enemy from '../components/Enemy';
 
 type Position = {
     x: number;
     y: number;
+    
     id?: number;
+    image?: string;
 };
 
 
+
+
+const asteroidImages = [asteroid1, asteroid2];
 let nextId = 0;
 
 const Gameplay: React.FC = () => {
@@ -18,6 +26,7 @@ const Gameplay: React.FC = () => {
   const [bullets, setBullets] = useState<Position[]>([]);
   const [gameOver, setGameOver] = useState(false);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
+  const [enemies, setEnemies] = useState<Position[]>([]);
 
   
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -80,7 +89,7 @@ const Gameplay: React.FC = () => {
         })
       );
       setBullets((prevBullets) =>
-      prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 10 }))
+      prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 }))
     );
       setBullets((prevBullets) =>
       prevBullets.filter((bullet) => {
@@ -106,6 +115,7 @@ const Gameplay: React.FC = () => {
           x: Math.random() * window.innerWidth,
           y: 0,
           id: nextId++,
+          image: asteroidImages[Math.floor(Math.random() * asteroidImages.length)],
         };
         setAsteroids((prev) => [...prev, newAsteroid]);
       }
@@ -116,6 +126,41 @@ const Gameplay: React.FC = () => {
   if (gameOver) {
     return <div>Game Over</div>;
   }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setEnemies((prev) =>
+        prev.map((enemy) => ({
+          ...enemy,
+          y: enemy.y + 10,
+        }))
+      );
+  
+      /*enemies.forEach((enemy) => {
+        if (Math.random() < 0.1) { 
+          const newBullet = {
+            x: enemy.x,
+            y: enemy.y,
+            id: nextId++,
+          };
+          setBullets((prev) => [...prev, newBullet]);
+        }
+      });*/
+    }, 100);
+    return () => clearInterval(interval);
+  }, [enemies]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newEnemy = {
+        x: Math.random() * window.innerWidth,
+        y: 0,
+        id: nextId++,
+      };
+      setEnemies((prev) => [...prev, newEnemy]);
+    }, 5000); 
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div
@@ -131,8 +176,15 @@ const Gameplay: React.FC = () => {
     >
       <Player position={playerPosition.current} /> 
       {asteroids.map((asteroid) => (
-        <Asteroid key={asteroid.id} position={asteroid} />
+      <Asteroid 
+        key={asteroid.id} 
+        position={asteroid} 
+        image={asteroid.image ?? ''}
+      />
       ))}
+      {enemies.map((enemy) => (
+      <Enemy key={enemy.id} position={enemy} />
+    ))}
       {bullets.map((bullet) => (
         <Bullet key={bullet.id} position={bullet} />
       ))}
