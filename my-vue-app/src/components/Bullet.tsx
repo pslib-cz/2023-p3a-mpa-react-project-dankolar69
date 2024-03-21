@@ -14,6 +14,7 @@ const Bullet: React.FC<BulletProps> = ({ position }) => (
       height: '10px',
       width: '10px',
       backgroundColor: 'white',
+      transition: 'top 0.1s, left 0.1s'
     }}
   />
 );

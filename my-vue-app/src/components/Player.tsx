@@ -13,6 +13,7 @@ const Player: React.FC<PlayerProps> = ({ position }) => (
       height: '50px',
       width: '50px',
       backgroundColor: 'white',
+      transition: 'top 0.2s, left 0.2s',
     }}
   />
 );
