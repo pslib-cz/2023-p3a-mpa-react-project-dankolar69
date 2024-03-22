@@ -5,8 +5,14 @@ type EnemyProps = {
     position: { x: number; y: number; };
   };
 
+  export type EnemyBullet = {
+    x: number;
+    y: number;
+    id: number;
+  };
 
   const Enemy: React.FC<EnemyProps> = ({ position }) => (
+    
     <div>
       <img
       src={enemy1}

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import "../styles/Gameplay.css";
 
 type AsteroidProps = {
   position: { x: number; y: number; };
@@ -23,6 +23,7 @@ const Asteroid: React.FC<AsteroidProps> = ({ position, image }) => (
       objectFit: 'cover',
       
       transition: 'top 0.1s, left 0.1s',
+      animation: 'spin 2s linear infinite',
     }}
       />
   </div>
