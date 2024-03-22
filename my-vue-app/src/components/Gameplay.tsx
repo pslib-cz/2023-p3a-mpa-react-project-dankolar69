@@ -13,7 +13,7 @@ type Position = {
     x: number;
     y: number;
     
-    id?: number;
+    id?: string;
     image?: string;
 };
 
@@ -22,6 +22,7 @@ type Position = {
 
 const asteroidImages = [asteroid1, asteroid2];
 //let nextId = 0;
+
 
 const Gameplay: React.FC = () => {
   const playerPosition = useRef<Position>({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
@@ -32,6 +33,7 @@ const Gameplay: React.FC = () => {
   const [enemies, setEnemies] = useState<Position[]>([]);
   const [enemyBullets, setEnemyBullets] = useState<EnemyBullet[]>([]);
   const [explosions, setExplosions] = useState([]);
+  const [score, setScore] = useState(0);
 
   
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -116,10 +118,12 @@ const Gameplay: React.FC = () => {
       return newBullets;
     });
       setBullets((prevBullets) =>
+      
       prevBullets.filter((bullet) => {
         
         for (let i = 0; i < enemies.length; i++) {
           const enemy = enemies[i];
+          
           if (
             bullet.x < enemy.x + 40 &&
             bullet.x + 40 > enemy.x &&
@@ -128,9 +132,10 @@ const Gameplay: React.FC = () => {
           ) {
             
             setEnemies((prevEnemies) => prevEnemies.filter((e) => e.id !== enemy.id));
-            
+            setScore(prevScore => prevScore + .5);
             return false;
           }
+          
         }
         return true;
       })
@@ -176,7 +181,7 @@ const Gameplay: React.FC = () => {
           const newBullet = {
             x: enemy.x,
             y: enemy.y,
-            id: uuidv4(),
+            id: parseInt(uuidv4()), 
           };
           setEnemyBullets((prev) => [...prev, newBullet]);
         }
@@ -197,7 +202,9 @@ const Gameplay: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
   if (gameOver) {
+    setScore(0);
     return <div>Game Over</div>;
+    
   }
 
   return (
@@ -212,6 +219,7 @@ const Gameplay: React.FC = () => {
         overflow: 'hidden'
       }}
     >
+      <h1 style={{ color: 'white' }}>Score: {score}</h1>
       <Player position={playerPosition.current} /> 
       {asteroids.map((asteroid) => (
       <Asteroid 
