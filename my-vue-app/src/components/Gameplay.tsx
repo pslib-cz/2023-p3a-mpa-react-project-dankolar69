@@ -8,19 +8,20 @@ import Enemy from '../components/Enemy';
 import { EnemyBullet } from '../components/Enemy';
 import fire from "../assets/images/fire.png";
 import {v4 as uuidv4} from 'uuid';
+import { Link } from 'react-router-dom';
+
+
+
 
 type Position = {
-    x: number;
-    y: number;
-    
-    id?: string;
-    image?: string;
+  x: number;
+  y: number;
+  id?: string;
+  image?: string;
 };
 
-
-
-
 const asteroidImages = [asteroid1, asteroid2];
+
 //let nextId = 0;
 
 
@@ -34,6 +35,7 @@ const Gameplay: React.FC = () => {
   const [enemyBullets, setEnemyBullets] = useState<EnemyBullet[]>([]);
   const [explosions, setExplosions] = useState([]);
   const [score, setScore] = useState(0);
+ 
 
   
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -130,9 +132,9 @@ const Gameplay: React.FC = () => {
             bullet.y < enemy.y + 40 &&
             bullet.y + 40 > enemy.y
           ) {
-            
             setEnemies((prevEnemies) => prevEnemies.filter((e) => e.id !== enemy.id));
             setScore(prevScore => prevScore + .5);
+            
             return false;
           }
           
@@ -155,8 +157,9 @@ const Gameplay: React.FC = () => {
   }, [asteroids]);
 
   
-
+  
   useEffect(() => {
+    
     const interval = setInterval(() => {
       setEnemies((prev) =>
       prev.map((enemy) => {
@@ -173,15 +176,16 @@ const Gameplay: React.FC = () => {
       prev.map((bullet) => ({
         ...bullet,
         y: bullet.y + 30,
-      }))
+      })) 
     );
-
+      
       enemies.forEach((enemy) => {
+        
         if (Math.random() < 0.1) { 
           const newBullet = {
             x: enemy.x,
             y: enemy.y,
-            id: parseInt(uuidv4()), 
+            id: uuidv4(), 
           };
           setEnemyBullets((prev) => [...prev, newBullet]);
         }
@@ -201,24 +205,21 @@ const Gameplay: React.FC = () => {
     }, 5000); 
     return () => clearInterval(interval);
   }, []);
+
   if (gameOver) {
-    setScore(0);
-    return <div>Game Over</div>;
-    
+    return (
+      
+      <div className='deadScreen'>
+        <h1>Game Over</h1>
+        <Link to="/">
+          <button onClick={() => setScore(0)}>Main Menu</button>
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed', 
-        top: 0, 
-        left: 0, 
-        height: '100vh',
-        width: '100vw',
-        backgroundColor: 'black',
-        overflow: 'hidden'
-      }}
-    >
+    <div className='gameplay-container'>
       <h1 style={{ color: 'white' }}>Score: {score}</h1>
       <Player position={playerPosition.current} /> 
       {asteroids.map((asteroid) => (
@@ -234,10 +235,10 @@ const Gameplay: React.FC = () => {
       {bullets.map((bullet) => (
         <Bullet key={bullet.id} position={bullet} />
       ))}
-      {enemyBullets.map((bullet) => (
-      <Bullet key={bullet.id} position={bullet} /> 
-
-    ))}
+        {enemyBullets.map((bullet) => (
+          <Bullet key={bullet.id} position={bullet} /> 
+        ))}
+        
     
     </div>
   );

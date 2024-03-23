@@ -8,7 +8,7 @@ type EnemyProps = {
   export type EnemyBullet = {
     x: number;
     y: number;
-    id: number;
+    id: string;
   };
 
   const Enemy: React.FC<EnemyProps> = ({ position }) => (
@@ -21,8 +21,8 @@ type EnemyProps = {
         position: 'absolute',
         top: position.y,
         left: position.x,
-        height: '50px',
-        width: '50px',
+        height: '100px',
+        width: '100px',
         
         transition: 'top 0.2s, left 0.2s',
       }}
