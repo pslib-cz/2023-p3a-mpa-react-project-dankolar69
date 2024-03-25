@@ -19,8 +19,8 @@ type EnemyProps = {
       alt="Enemy"
       style={{
         position: 'absolute',
-        top: position.y,
-        left: position.x,
+        top: position.y - 80,
+        left: position.x - 50,
         height: '100px',
         width: '100px',
         
