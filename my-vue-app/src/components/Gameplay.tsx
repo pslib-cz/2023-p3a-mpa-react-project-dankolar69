@@ -9,6 +9,9 @@ import { EnemyBullet } from '../components/Enemy';
 import fire from "../assets/images/fire.png";
 import {v4 as uuidv4} from 'uuid';
 import { Link } from 'react-router-dom';
+import { System, Circle, Point } from 'detect-collisions';
+
+const system = new System();
 
 
 
@@ -18,6 +21,7 @@ type Position = {
   y: number;
   id?: string;
   image?: string;
+  collisionBody?: Circle|Point;
 };
 
 const asteroidImages = [asteroid1, asteroid2];
@@ -96,9 +100,10 @@ const Gameplay: React.FC = () => {
 
           return { ...asteroid, y: asteroid.y + 10 };
         })
+        .filter((asteroid) => asteroid.y < window.innerHeight)
       );
       setBullets((prevBullets) =>
-      prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 }))
+      prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 })).filter((bullet) => bullet.y >= 0)
     );
     setBullets((prevBullets) => {
       const newBullets = prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 }));
@@ -171,6 +176,7 @@ const Gameplay: React.FC = () => {
           y: enemy.y + 10,
         };
       })
+      .filter((enemy) => enemy.y < window.innerHeight)
       );
       setEnemyBullets((prev) =>
       prev.map((bullet) => ({
