@@ -9,9 +9,9 @@ import { EnemyBullet } from '../components/Enemy';
 import fire from "../assets/images/fire.png";
 import {v4 as uuidv4} from 'uuid';
 import { Link } from 'react-router-dom';
-import { System, Circle, Point } from 'detect-collisions';
 
-const system = new System();
+
+
 
 
 
@@ -21,7 +21,7 @@ type Position = {
   y: number;
   id?: string;
   image?: string;
-  collisionBody?: Circle|Point;
+  
 };
 
 const asteroidImages = [asteroid1, asteroid2];
@@ -84,7 +84,12 @@ const Gameplay: React.FC = () => {
     return () => clearInterval(interval);
   }, []); 
 
+  
+
+  
+  
   useEffect(() => {
+    
     const interval = setInterval(() => {
       setAsteroids((prev) =>
         prev.map((asteroid) => {
@@ -107,8 +112,8 @@ const Gameplay: React.FC = () => {
     );
     setBullets((prevBullets) => {
       const newBullets = prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 }));
-
-      for (let i = 0; i < newBullets.length; i++) {
+      const bulletsOnScreen = newBullets.filter((bullet) => bullet.y >= 0 && bullet.y <= window.innerHeight);
+      for (let i = newBullets.length - 1; i >= 0; i--) {
         for (let j = 0; j < asteroids.length; j++) {
           if (
             asteroids[j].x < newBullets[i].x + 40 &&
@@ -121,8 +126,10 @@ const Gameplay: React.FC = () => {
           }
         }
       }
+      
+      return bulletsOnScreen;
 
-      return newBullets;
+      
     });
       setBullets((prevBullets) =>
       
@@ -157,15 +164,6 @@ const Gameplay: React.FC = () => {
         };
         setAsteroids((prev) => [...prev, newAsteroid]);
       }
-    }, 100);
-    return () => clearInterval(interval);
-  }, [asteroids]);
-
-  
-  
-  useEffect(() => {
-    
-    const interval = setInterval(() => {
       setEnemies((prev) =>
       prev.map((enemy) => {
         
@@ -178,11 +176,12 @@ const Gameplay: React.FC = () => {
       })
       .filter((enemy) => enemy.y < window.innerHeight)
       );
-      setEnemyBullets((prev) =>
-      prev.map((bullet) => ({
-        ...bullet,
-        y: bullet.y + 30,
-      })) 
+      setEnemyBullets((prev) =>{
+        const newBullets = prev.map((bullet) => ({ ...bullet, y: bullet.y + 30 }));
+          const bulletsOnScreen = newBullets.filter((bullet) => bullet.y <= window.innerHeight);
+          return bulletsOnScreen;
+      }
+            
     );
       
       enemies.forEach((enemy) => {
@@ -198,7 +197,7 @@ const Gameplay: React.FC = () => {
       });
     }, 100);
     return () => clearInterval(interval);
-  }, [enemies]);
+  }, [enemies, asteroids]);
 
   useEffect(() => {
     const interval = setInterval(() => {
