@@ -1,8 +1,8 @@
-# Název mého projektu, programu, hry...
+# 2D Space Shooter
 
 ## Téma
 
-Tady bude krátký a úderný popis o účelu, významu, funkcionalitě...
+Arkádová hra, kde hráč ovládá vesmírnou loď a střetává se s nepřátelskými loděmi a meteority ve vesmírném prostoru. Postavená s využitím Reactu, nabízí hra jednoduché uživatelské rozhraní a pohodlný herní zážitek. Hráči se mohou těšit na vizuálně přitažlivou prezentaci a výzvy spojené s odoláváním postupně se zvyšující obtížnosti hry.
 
 ## Odkazy pro vývoj
 
