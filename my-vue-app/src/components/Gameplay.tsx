@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Bullet from './Bullet';
 import Asteroid from './Asteroid';
 import Player from './Player';
@@ -10,6 +10,7 @@ import { EnemyBullet } from '../components/Enemy';
 import fire from "../assets/images/fire.png";
 import {v4 as uuidv4} from 'uuid';
 import { Link } from 'react-router-dom';
+import { GameContext } from '../providers/ContextProvider';
 
 
 
@@ -43,8 +44,14 @@ const Gameplay: React.FC = () => {
   const [explosions, setExplosions] = useState([]);
   const [score, setScore] = useState(0);
  
+  /*const gameState = useContext(GameContext);
 
-  
+  if (!gameState) {
+    throw new Error('useContext was called outside of the GameContext provider.');
+  }
+
+  const { score, gameOver } = gameState;*/
+
   const handleKeyDown = (event: KeyboardEvent) => {
     keysPressed.current[event.key] = true;
   };
@@ -113,49 +120,54 @@ const Gameplay: React.FC = () => {
       setBullets((prevBullets) =>
       prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 })).filter((bullet) => bullet.y >= 0)
     );
-    setBullets((prevBullets) => {
-      const newBullets = prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 }));
-      const bulletsOnScreen = newBullets.filter((bullet) => bullet.y >= 0 && bullet.y <= window.innerHeight);
-      for (let i = newBullets.length - 1; i >= 0; i--) {
-        for (let j = 0; j < asteroids.length; j++) {
-          if (
-            asteroids[j].x < newBullets[i].x + 40 &&
-            asteroids[j].x + 40 > newBullets[i].x &&
-            asteroids[j].y < newBullets[i].y + 40 &&
-            asteroids[j].y + 40 > newBullets[i].y
-          ) {
-            newBullets.splice(i, 1);
-            break;
-          }
-        }
+    
+      setBullets((prevBullets) =>{
+        const newBullets = prevBullets.map((bullet) => ({ ...bullet, y: bullet.y - 30 }));
+
+  // Check for collision with asteroids
+  const bulletsAfterAsteroidCollision = newBullets.filter((bullet) => {
+    for (let j = 0; j < asteroids.length; j++) {
+      if (
+        asteroids[j].x < bullet.x + 40 &&
+        asteroids[j].x + 40 > bullet.x &&
+        asteroids[j].y < bullet.y + 40 &&
+        asteroids[j].y + 40 > bullet.y
+      ) {
+        // Collision detected, remove this bullet
+        return false;
+      }
+    }
+    // No collision detected, keep this bullet
+    return true;
+  });
+
+  // Check for collision with enemies
+  const bulletsAfterEnemyCollision = bulletsAfterAsteroidCollision.filter((bullet) => {
+    for (let i = 0; i < enemies.length; i++) {
+      const enemy = enemies[i];
+      if (
+        bullet.x < enemy.x + 40 &&
+        bullet.x + 40 > enemy.x &&
+        bullet.y < enemy.y + 40 &&
+        bullet.y + 40 > enemy.y
+      ) {
+        setEnemies((prevEnemies) => prevEnemies.filter((e) => e.id !== enemy.id));
+        setScore(prevScore => prevScore + .5);
+        // Collision detected, remove this bullet
+        return false;
+      }
+    }
+    // No collision detected, keep this bullet
+    return true;
+  });
+
+  // Only keep bullets that are still on the screen
+  const bulletsOnScreen = bulletsAfterEnemyCollision.filter((bullet) => bullet.y >= 0 && bullet.y <= window.innerHeight);
+
+  return bulletsOnScreen;
       }
       
-      return bulletsOnScreen;
-
       
-    });
-      setBullets((prevBullets) =>
-      
-      prevBullets.filter((bullet) => {
-        
-        for (let i = 0; i < enemies.length; i++) {
-          const enemy = enemies[i];
-          
-          if (
-            bullet.x < enemy.x + 40 &&
-            bullet.x + 40 > enemy.x &&
-            bullet.y < enemy.y + 40 &&
-            bullet.y + 40 > enemy.y
-          ) {
-            setEnemies((prevEnemies) => prevEnemies.filter((e) => e.id !== enemy.id));
-            setScore(prevScore => prevScore + .5);
-            
-            return false;
-          }
-          
-        }
-        return true;
-      })
     );
   
       if (Math.random() < 0.10) {
