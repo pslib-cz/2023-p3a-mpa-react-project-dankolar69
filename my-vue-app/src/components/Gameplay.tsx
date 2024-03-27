@@ -179,10 +179,24 @@ const Gameplay: React.FC = () => {
             //enemy1
             const newTime = (enemy.time ?? 0) + 0.05 * (enemy.direction ?? 1 ?? 0);
             const newX = window.innerWidth / 2 + Math.sin(newTime) * window.innerWidth / 2;
+            const newY = enemy.y + 10;
+
+            
+
+            if (
+              newX < playerPosition.current.x + 40 &&
+              newX + 40 > playerPosition.current.x &&
+              newY < playerPosition.current.y + 40 &&
+              newY + 40 > playerPosition.current.y
+            ) {
+              // If a collision occurs, set the game over state to true
+              setGameOver(true);
+            }
+            
             return {
               ...enemy,
               x: newX,
-              y: enemy.y + 10,
+              y: newY,
               time: newTime,
             };
           }
@@ -192,7 +206,18 @@ const Gameplay: React.FC = () => {
         const newBullets = prev.map((bullet) => { 
           //enemy2 faster bullet
           const speed = bullet.type === 'enemy2' ? 60 : 30;
-             return { ...bullet, y: bullet.y + speed }; 
+          const newY = bullet.y + speed;
+
+
+          if (
+            bullet.x < playerPosition.current.x + 40 &&
+            bullet.x + 40 > playerPosition.current.x &&
+            newY < playerPosition.current.y + 40 &&
+            newY + 40 > playerPosition.current.y
+          ) {
+            setGameOver(true);}
+          return { ...bullet, y: newY };
+             
         });
           const bulletsOnScreen = newBullets.filter((bullet) => bullet.y <= window.innerHeight);
           return bulletsOnScreen;
