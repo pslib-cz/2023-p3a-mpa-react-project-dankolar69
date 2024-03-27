@@ -4,7 +4,8 @@ import Asteroid from './Asteroid';
 import Player from './Player';
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
-import Enemy from '../components/Enemy';
+import {Enemy1} from '../components/Enemy';
+import {Enemy2} from '../components/Enemy';
 import { EnemyBullet } from '../components/Enemy';
 import fire from "../assets/images/fire.png";
 import {v4 as uuidv4} from 'uuid';
@@ -21,7 +22,9 @@ type Position = {
   y: number;
   id?: string;
   image?: string;
-  
+  time?: number;
+  direction?: number;
+  type?: string;
 };
 
 const asteroidImages = [asteroid1, asteroid2];
@@ -165,19 +168,32 @@ const Gameplay: React.FC = () => {
         setAsteroids((prev) => [...prev, newAsteroid]);
       }
       setEnemies((prev) =>
-      prev.map((enemy) => {
-        
-        
-        return {
-          ...enemy,
-          
-          y: enemy.y + 10,
-        };
-      })
-      .filter((enemy) => enemy.y < window.innerHeight)
+        prev.map((enemy) => {
+          if (enemy.type === 'enemy2') {
+            //enemy2
+            return {
+              ...enemy,
+              y: enemy.y + 30,
+            };
+          } else {
+            //enemy1
+            const newTime = (enemy.time ?? 0) + 0.05 * (enemy.direction ?? 1 ?? 0);
+            const newX = window.innerWidth / 2 + Math.sin(newTime) * window.innerWidth / 2;
+            return {
+              ...enemy,
+              x: newX,
+              y: enemy.y + 10,
+              time: newTime,
+            };
+          }
+        }).filter((enemy) => enemy.y < window.innerHeight)
       );
       setEnemyBullets((prev) =>{
-        const newBullets = prev.map((bullet) => ({ ...bullet, y: bullet.y + 30 }));
+        const newBullets = prev.map((bullet) => { 
+          //enemy2 faster bullet
+          const speed = bullet.type === 'enemy2' ? 60 : 30;
+             return { ...bullet, y: bullet.y + speed }; 
+        });
           const bulletsOnScreen = newBullets.filter((bullet) => bullet.y <= window.innerHeight);
           return bulletsOnScreen;
       }
@@ -190,7 +206,8 @@ const Gameplay: React.FC = () => {
           const newBullet = {
             x: enemy.x,
             y: enemy.y,
-            id: uuidv4(), 
+            id: uuidv4(),
+            type: enemy.type ?? 'enemy1',
           };
           setEnemyBullets((prev) => [...prev, newBullet]);
         }
@@ -205,6 +222,9 @@ const Gameplay: React.FC = () => {
         x: Math.random() * window.innerWidth,
         y: 0,
         id: uuidv4(),
+        time: 0,
+        direction: Math.random() < 0.5 ? 1 : -1,
+        type: Math.random() < 0.5 ? 'enemy1' : 'enemy2',
       };
       setEnemies((prev) => [...prev, newEnemy]);
     }, 5000); 
@@ -234,9 +254,14 @@ const Gameplay: React.FC = () => {
         image={asteroid.image ?? ''}
       />
       ))}
-      {enemies.map((enemy) => (
-      <Enemy key={enemy.id} position={enemy} />
-    ))}
+      {enemies.map((enemy) => {
+          if (enemy.type === 'enemy2') {
+            return <Enemy2 key={enemy.id} position={enemy} />;
+          } else {
+            return <Enemy1 key={enemy.id} position={enemy} />;
+          }
+        })}
+              
       {bullets.map((bullet) => (
         <Bullet key={bullet.id} position={bullet} />
       ))}
