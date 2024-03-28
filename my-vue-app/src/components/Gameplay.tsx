@@ -9,7 +9,7 @@ import {Enemy2} from '../components/Enemy';
 import { EnemyBullet } from '../components/Enemy';
 import fire from "../assets/images/fire.png";
 import {v4 as uuidv4} from 'uuid';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GameContext } from '../providers/ContextProvider';
 
 
@@ -37,20 +37,15 @@ const Gameplay: React.FC = () => {
   const playerPosition = useRef<Position>({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const [asteroids, setAsteroids] = useState<Position[]>([]);
   const [bullets, setBullets] = useState<Position[]>([]);
-  const [gameOver, setGameOver] = useState(false);
+  
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const [enemies, setEnemies] = useState<Position[]>([]);
   const [enemyBullets, setEnemyBullets] = useState<EnemyBullet[]>([]);
   const [explosions, setExplosions] = useState([]);
-  const [score, setScore] = useState(0);
+  
+  const navigate = useNavigate();
  
-  /*const gameState = useContext(GameContext);
-
-  if (!gameState) {
-    throw new Error('useContext was called outside of the GameContext provider.');
-  }
-
-  const { score, gameOver } = gameState;*/
+  const { score, setScore, gameOver, setGameOver } = useContext(GameContext);
 
   const handleKeyDown = (event: KeyboardEvent) => {
     keysPressed.current[event.key] = true;
@@ -274,10 +269,13 @@ const Gameplay: React.FC = () => {
       <div className='deadScreen'>
         <h1>Game Over</h1>
         <Link to="/">
-          <button onClick={() => setScore(0)}>Main Menu</button>
+          <button onClick={() => { setScore(0); setGameOver(false); }}>Main Menu</button>
         </Link>
       </div>
     );
+  }
+  if (score > 3) {
+    navigate('/boss');
   }
 
   return (

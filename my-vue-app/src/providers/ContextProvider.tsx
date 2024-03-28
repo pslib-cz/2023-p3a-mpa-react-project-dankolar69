@@ -1,17 +1,24 @@
-import React, { PropsWithChildren, createContext, useState } from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 
-type GameState = {
+interface GameContextType {
   score: number;
-  setScore: React.Dispatch<React.SetStateAction<number>>;
+  setScore: (value: number | ((prevVar: number) => number)) => void;
   gameOver: boolean;
-  setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  setGameOver: (gameOver: boolean) => void;
+}
+
+const defaultState = {
+  score: 0,
+  setScore: () => {},
+  gameOver: false,
+  setGameOver: () => {},
 };
 
-export const GameContext = createContext<GameState | undefined>(undefined);
+export const GameContext = createContext<GameContextType>(defaultState);
 
-export const GameProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
+export const GameProvider: React.FC<{children: ReactNode}> = ({ children }) => {
+  const [score, setScore] = useState<number>(0);
+  const [gameOver, setGameOver] = useState<boolean>(false);
 
   return (
     <GameContext.Provider value={{ score, setScore, gameOver, setGameOver }}>

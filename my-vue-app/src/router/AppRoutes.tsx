@@ -5,6 +5,7 @@ import  MainMenu  from '../components/MainMenu';
 import GamePlay  from '../components/Gameplay';
 import App from '../App';
 import Victory from '../components/Victory';
+import BossFight from '../components/BossFight';
 
 
 const AppRoutes: React.FC = () => {
@@ -16,6 +17,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/app" element={<App />} />
         <Route path="/gameplay" element={<GamePlay />} />
         <Route path='/victory' element={<Victory />} />
+        <Route path='/boss' element={<BossFight />} />
       </Routes>
     </Router>
   );
