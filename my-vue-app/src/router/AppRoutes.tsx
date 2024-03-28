@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import  MainMenu  from '../components/MainMenu';
-import GamePlay  from '../components/Gameplay';
+import  MainMenu  from '../pages/MainMenu';
+import GamePlay  from '../pages/Gameplay';
 import App from '../App';
-import Victory from '../components/Victory';
-import BossFight from '../components/BossFight';
+import Victory from '../pages/Victory';
+import BossFight from '../pages/BossFight';
+import DeadScreen from '../pages/DeadScreen';
 
 
 const AppRoutes: React.FC = () => {
@@ -18,6 +19,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/gameplay" element={<GamePlay />} />
         <Route path='/victory' element={<Victory />} />
         <Route path='/boss' element={<BossFight />} />
+        <Route path='/dead' element={<DeadScreen />} />
       </Routes>
     </Router>
   );

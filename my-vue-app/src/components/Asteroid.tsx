@@ -3,7 +3,7 @@ import "../styles/Gameplay.css";
 
 type AsteroidProps = {
   position: { x: number; y: number; };
-  image: string;
+  image?: string;
 };
 
 

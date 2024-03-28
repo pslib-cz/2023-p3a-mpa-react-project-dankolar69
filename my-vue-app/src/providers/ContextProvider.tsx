@@ -1,28 +1,29 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useReducer } from 'react';
+import { GameState} from '../components/GameReducer';
+import gameReducer from '../components/GameReducer';
 
-interface GameContextType {
-  score: number;
-  setScore: (value: number | ((prevVar: number) => number)) => void;
-  gameOver: boolean;
-  setGameOver: (gameOver: boolean) => void;
-}
-
-const defaultState = {
-  score: 0,
-  setScore: () => {},
+export const initialState: GameState = {
+  playerPosition: { id: 'player', x: window.innerWidth / 2, y: window.innerHeight / 2 },
+  asteroids: [],
+  bullets: [],
+  enemies: [],
+  enemyBullets: [],
   gameOver: false,
-  setGameOver: () => {},
+  score: 0,
 };
 
-export const GameContext = createContext<GameContextType>(defaultState);
+
+export const GameContext = createContext<{
+  state: GameState;
+  dispatch: React.Dispatch<any>;
+}>({ state: initialState, dispatch: () => null });
 
 export const GameProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [score, setScore] = useState<number>(0);
-  const [gameOver, setGameOver] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(gameReducer, initialState);
 
   return (
-    <GameContext.Provider value={{ score, setScore, gameOver, setGameOver }}>
-      {children}
-    </GameContext.Provider>
+    <GameContext.Provider value={{ state, dispatch }}>
+    {children}
+  </GameContext.Provider>
   );
 };
