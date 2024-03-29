@@ -39,7 +39,6 @@ export type GameAction =
   | { type: 'UPDATE_GAME_STATE' }
   | { type: 'GAME_OVER' }
   | { type: 'RESET_GAME' }
-  
   | { type: 'ADD_ENEMY_BULLET' };
 
   const initialState: GameState = {
@@ -103,12 +102,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
           case 'UPDATE_GAME_STATE': {
             
-            
+            let gameOver = state.gameOver;
            //pohyb asteroidů + detekce kolize
             const updatedAsteroids: Position[] = state.asteroids.map(asteroid => {
                 if (detectCollision(asteroid, state.playerPosition)) {
                  
-                  state.gameOver = true;
+                  gameOver = true;
                 }
               
                 return { ...asteroid, y: asteroid.y + 10 };
@@ -118,6 +117,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             
             //pohyb nepřátel + detekce kolize
             const updatedEnemies: Position[] = state.enemies.map(enemy => {
+              
                 if (enemy.type === 'enemy2') {
                     //enemy2
                     return {
@@ -180,7 +180,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 if (
                         detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: '' }, { x: bullet.x, y: newY, id: '' })
                 ) {
-                        state.gameOver = true;
+                        gameOver = true;
                 }
         
                 return { ...bullet, y: newY };
@@ -198,6 +198,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 bullets: updatedBullets,
                 enemyBullets: updatedEnemyBullets,
                 enemies: updatedEnemies,
+                gameOver: gameOver,
                 
                 
             };
@@ -214,7 +215,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             x: Math.random() * window.innerWidth,
             y: 0,
             id: uuidv4(),
-            type: Math.random() < 0.5 ? 'enemy1' : 'enemy2', 
+            type: Math.random() < 0.33 ? 'enemy1' : Math.random() < 0.66 ? 'enemy2' : 'enemy3',
           };
           return { ...state, enemies: [...state.enemies, newEnemy] };
         default:

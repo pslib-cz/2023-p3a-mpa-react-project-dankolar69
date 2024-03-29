@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 const Gameplay = () => {
   const { state, dispatch } = useContext(GameContext);
   
+  
   const navigate = useNavigate();
 
   // Pohyb hráče pomocí klávesnice
@@ -103,6 +104,8 @@ const Gameplay = () => {
 
   return (
     <div className="gameplay-container">
+      <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
+
       <Player position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
         <Asteroid key={asteroid.id} position={asteroid} image={asteroid.image} />
@@ -111,7 +114,7 @@ const Gameplay = () => {
         <Bullet key={bullet.id} position={bullet} />
       ))}
       {state.enemies.map(enemy => (
-        enemy.type === 'enemy1' ? <Enemy1 key={enemy.id} position={enemy} /> : <Enemy2 key={enemy.id} position={enemy} />
+        enemy.type === 'enemy1' ? <Enemy1 key={enemy.id} position={enemy} /> : <Enemy2 key={enemy.id} position={enemy} /> 
       ))}
       {state.enemyBullets.map(bullet => (
         

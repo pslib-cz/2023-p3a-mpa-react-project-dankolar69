@@ -15,9 +15,9 @@ const Bullet: React.FC<BulletProps> = ({ position }) => (
       style={{
         position: 'absolute',
         top: position.y,
-        left: position.x - 10,
-        height: '30px',
-        width: '20px',
+        left: position.x ,
+        height: '40px',
+        width: '5px',
         
         transition: 'top 0.2s, left 0.2s',
       }}
