@@ -128,9 +128,16 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     };
                   } else {
                     //enemy1
-                    const newTime = (enemy.time ?? 0) + 0.05 * (enemy.direction ?? 1 ?? 0);
-                    const newX = window.innerWidth / 2 + Math.sin(newTime) * window.innerWidth / 2;
+                    const speed = 30;
+                    let newDirection = enemy.direction ?? 1;
+                    let newX = enemy.x + (speed * newDirection);
                     const newY = enemy.y + 10;
+
+                    // Kontrola kolize s bočními stěnami a změna směru
+                    if (newX <= 0 || newX >= window.innerWidth - 40) { // Předpokládáme, že šířka enemy1 je 40px
+                      newDirection *= -1; // Změna směru
+                      newX = enemy.x + (speed * newDirection); // Aktualizujeme polohu s novým směrem
+    }
                     
                     
                     
@@ -141,7 +148,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   ...enemy,
                   x: newX,
                   y: newY,
-                  time: newTime,
+                  direction: newDirection,
                 };
               }}).filter(enemy => enemy.y < window.innerHeight);
 
@@ -219,11 +226,13 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         case 'RESET_GAME':
           return initialState;
           case 'ADD_ENEMY':
+            const direction = Math.random() < 0.5 ? 1 : -1;
             const newEnemy = {
               x: Math.random() * window.innerWidth,
               y: 0,
               id: uuidv4(),
               type: Math.random() < 0.5 ? 'enemy1' : 'enemy2', 
+              direction: direction,
             };
             return { ...state, enemies: [...state.enemies, newEnemy] };
           default:
