@@ -210,17 +210,17 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           return { ...state, gameOver: true };
         case 'RESET_GAME':
           return initialState;
-        case 'ADD_ENEMY':
-          const newEnemy = {
-            x: Math.random() * window.innerWidth,
-            y: 0,
-            id: uuidv4(),
-            type: Math.random() < 0.33 ? 'enemy1' : Math.random() < 0.66 ? 'enemy2' : 'enemy3',
-          };
-          return { ...state, enemies: [...state.enemies, newEnemy] };
-        default:
-          return state;
-      }
+          case 'ADD_ENEMY':
+            const newEnemy = {
+              x: Math.random() * window.innerWidth,
+              y: 0,
+              id: uuidv4(),
+              type: Math.random() < 0.5 ? 'enemy1' : 'enemy2', 
+            };
+            return { ...state, enemies: [...state.enemies, newEnemy] };
+          default:
+            return state;
+        }
 };
 
 export default gameReducer;
