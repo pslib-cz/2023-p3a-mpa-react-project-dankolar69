@@ -1,6 +1,7 @@
 import React from 'react';
 import playerImage from '../assets/images/playerImage.png';
 
+
 type PlayerProps = {
   position: { x: number; y: number; };
 };

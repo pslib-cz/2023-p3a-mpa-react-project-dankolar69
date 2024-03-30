@@ -1,16 +1,9 @@
 import React, { createContext, useState, ReactNode, useReducer } from 'react';
 import { GameState} from '../components/GameReducer';
 import gameReducer from '../components/GameReducer';
+import { initialState } from '../components/GameReducer';
 
-export const initialState: GameState = {
-  playerPosition: { id: 'player', x: window.innerWidth / 2, y: window.innerHeight / 2 },
-  asteroids: [],
-  bullets: [],
-  enemies: [],
-  enemyBullets: [],
-  gameOver: false,
-  score: 0,
-};
+
 
 
 export const GameContext = createContext<{

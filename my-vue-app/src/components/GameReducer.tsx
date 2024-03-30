@@ -29,6 +29,7 @@ export type GameState = {
   enemyBullets: Position[];
   gameOver: boolean;
   score: number;
+  lives: number;
 };
 
 export type GameAction =
@@ -41,7 +42,7 @@ export type GameAction =
   | { type: 'RESET_GAME' }
   | { type: 'ADD_ENEMY_BULLET' };
 
-  const initialState: GameState = {
+  export const initialState: GameState = {
     playerPosition: { x: window.innerWidth / 2, y: window.innerHeight / 2, id: uuidv4() },
     asteroids: [],
     bullets: [],
@@ -49,6 +50,7 @@ export type GameAction =
     enemyBullets: [],
     gameOver: false,
     score: 0,
+    lives: 3,
   };
 
 
@@ -103,15 +105,15 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           case 'UPDATE_GAME_STATE': {
             
             let gameOver = state.gameOver;
+            let newLives = state.lives;
            //pohyb asteroidů + detekce kolize
-            const updatedAsteroids: Position[] = state.asteroids.map(asteroid => {
-                if (detectCollision(asteroid, state.playerPosition)) {
-                 
-                  gameOver = true;
-                }
-              
-                return { ...asteroid, y: asteroid.y + 10 };
-              }).filter(asteroid => asteroid.y < window.innerHeight);
+            const updatedAsteroids = state.asteroids.map(asteroid => {
+              if (!gameOver && detectCollision(asteroid, state.playerPosition)) {
+                newLives -= 1;
+                return null; // null indicates this asteroid should be removed
+              }
+              return { ...asteroid, y: asteroid.y + 10 };
+            }).filter((asteroid): asteroid is Position => asteroid !== null && asteroid.y < window.innerHeight);
             
             
             
@@ -129,9 +131,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     const newTime = (enemy.time ?? 0) + 0.05 * (enemy.direction ?? 1 ?? 0);
                     const newX = window.innerWidth / 2 + Math.sin(newTime) * window.innerWidth / 2;
                     const newY = enemy.y + 10;
-        
                     
-        
+                    
+                    
+                
                     
             
                 return {
@@ -140,7 +143,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   y: newY,
                   time: newTime,
                 };
-              }})
+              }}).filter(enemy => enemy.y < window.innerHeight);
 
               //pohyb střel hráče + detekce kolize
               let updatedBullets = state.bullets.map(bullet => ({
@@ -180,13 +183,17 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 if (
                         detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: '' }, { x: bullet.x, y: newY, id: '' })
                 ) {
-                        gameOver = true;
+                    newLives -= 1;
+                    return null;
+                    
                 }
         
                 return { ...bullet, y: newY };
-            }).filter(bullet => bullet.y <= window.innerHeight);
+            }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
             
-              
+            if (newLives <= 0 && !gameOver) {
+              gameOver = true;
+            }
 
               
               
@@ -194,6 +201,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           
             return {
                 ...state,
+                lives: newLives,
                 asteroids: updatedAsteroids,
                 bullets: updatedBullets,
                 enemyBullets: updatedEnemyBullets,

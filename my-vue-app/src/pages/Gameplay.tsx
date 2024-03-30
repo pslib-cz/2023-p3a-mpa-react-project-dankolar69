@@ -105,8 +105,9 @@ const Gameplay = () => {
   return (
     <div className="gameplay-container">
       <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
+      <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
 
-      <Player position={state.playerPosition} />
+      <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
         <Asteroid key={asteroid.id} position={asteroid} image={asteroid.image} />
       ))}
