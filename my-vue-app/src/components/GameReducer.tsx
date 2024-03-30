@@ -148,7 +148,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               //pohyb střel hráče + detekce kolize
               let updatedBullets = state.bullets.map(bullet => ({
                 ...bullet,
-                y: bullet.y - 30, 
+                y: bullet.y - 100, 
               })).filter(bullet => {
                 
                 if (bullet.y <= 0) {

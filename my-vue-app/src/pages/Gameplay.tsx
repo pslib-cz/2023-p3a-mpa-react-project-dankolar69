@@ -24,27 +24,38 @@ const Gameplay = () => {
     ArrowDown: false,
     ArrowLeft: false,
     ArrowRight: false,
+    
   });
   
   const handleKeyDown = (event: KeyboardEvent) => {
-    keys.current = { ...keys.current, [event.key]: true };
+    if (event.code === 'Space') {
+      event.preventDefault();
+      dispatch({ type: 'ADD_BULLET', payload: { playerPosition: state.playerPosition } });
+    } else {
+      keys.current = { ...keys.current, [event.key]: true };
+    }
   };
   
   const handleKeyUp = (event: KeyboardEvent) => {
-    keys.current = { ...keys.current, [event.key]: false };
+   
+      keys.current = { ...keys.current, [event.key]: false };
+    
   };
   
   useEffect(() => {
     const movePlayer = () => {
       for (const direction in keys.current) {
-        if (keys.current[direction as keyof typeof keys.current]) {
+        if (direction !== 'Shoot' && keys.current[direction as keyof typeof keys.current]) {
           dispatch({ type: 'MOVE_PLAYER', payload: { direction } });
         }
       }
     };
   
     const intervalId = setInterval(movePlayer, 50); //plynulý pohyb
-  
+    
+
+    
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
   
@@ -87,7 +98,7 @@ const Gameplay = () => {
 
   useEffect(() => {
     const addEntitiesInterval = setInterval(() => {
-      dispatch({ type: 'ADD_BULLET', playerPosition: state.playerPosition});
+      
       dispatch({ type: 'ADD_ENEMY_BULLET'});
       
     }, 1000); 
@@ -95,6 +106,9 @@ const Gameplay = () => {
     return () => clearInterval(addEntitiesInterval);
   }, [dispatch]);
 
+  
+
+  
   
   if (state.gameOver) {
     
