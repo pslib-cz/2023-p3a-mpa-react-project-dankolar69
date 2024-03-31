@@ -6,17 +6,29 @@ import asteroid2 from "../assets/images/asteroid2.png";
 
 
 //detekce kolize
-function detectCollision(item1: Position, item2: Position) {
-    return item1.x < item2.x + 40 &&
-        item1.x + 40 > item2.x &&
-        item1.y < item2.y + 40 &&
-        item1.y + 40 > item2.y;
+const playerWidth = 50;
+const playerHeight = 50;
+const asteroidWidth = 50; 
+const asteroidHeight = 50;
+const bulletWidth = 5; 
+const bulletHeight = 40;
+const enemyWidth = 80;
+const enemyHeight = 80;
+
+function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number) {
+  return (
+    obj1.x < obj2.x + width2 &&
+    obj1.x + width1 > obj2.x &&
+    obj1.y < obj2.y + height2 &&
+    obj1.y + height1 > obj2.y
+  );
 }
 
 type Position = {
     x: number;
     y: number;
     id: string;
+    size?: number;
     image?: string;
     direction?: number;
     type?: string;
@@ -158,7 +170,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
            //pohyb asteroidů + detekce kolize
             const updatedAsteroids = state.asteroids.map(asteroid => {
-              if (!gameOver && detectCollision(asteroid, state.playerPosition)) {
+              if (!gameOver && detectCollision(asteroid, state.playerPosition, asteroidWidth, asteroidHeight, playerWidth, playerHeight)) {
                 newLives -= 1;
                 return null; 
               }
@@ -214,13 +226,13 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 }
 
                 for (let asteroid of state.asteroids) {
-                    if (detectCollision(bullet, asteroid)) {
+                    if (detectCollision(bullet, asteroid, bulletWidth, bulletHeight, asteroidWidth, asteroidHeight)) {
                         return false;
                     }
                 }
 
                 
-                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy));
+                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight));
                     if (hitEnemyIndex !== -1) {
                     updatedEnemies.splice(hitEnemyIndex, 1); 
                     state.score += 1; 
@@ -239,7 +251,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 const newY = bullet.y + speed;
         
                 if (
-                        detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: '' }, { x: bullet.x, y: newY, id: '' })
+                        detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
                 ) {
                     newLives -= 1;
                     return null;
