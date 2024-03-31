@@ -67,7 +67,7 @@ const Gameplay = () => {
 
   
   // Přechod na boss fight
-  if (state.score >= 10) {
+  if (state.score >= 3) {
     navigate('/boss');
   }
   

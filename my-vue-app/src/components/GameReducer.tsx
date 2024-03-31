@@ -33,10 +33,13 @@ type Position = {
     direction?: number;
     type?: string;
     time?: number;
+    isCharging?: boolean;
+    originalY?: number;
 };
 
 export type GameState = {
   playerPosition: Position;
+  bossPosition: Position;
   asteroids: Position[];
   bullets: Position[];
   enemies: Position[];
@@ -51,6 +54,7 @@ export type GameAction =
   
   | { type: 'ADD_ASTEROID' }
   | { type: 'ADD_BULLET' }
+  | { type: 'ADD_BOSS' }
   | { type: 'ADD_ENEMY' }
   | { type: 'UPDATE_GAME_STATE' }
   | { type: 'GAME_OVER' }
@@ -64,6 +68,7 @@ export type GameAction =
 
   export const initialState: GameState = {
     playerPosition: { x: window.innerWidth / 2, y: window.innerHeight / 2, id: uuidv4() },
+    bossPosition: { x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() },
     asteroids: [],
     bullets: [],
     enemies: [],
@@ -152,6 +157,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return { ...state, enemyBullets: [...state.enemyBullets, ...newEnemyBullets] };
               }
               return state;
+      
       
       //aktualizace stavu hry
           case 'UPDATE_GAME_STATE': {
@@ -265,8 +271,34 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               gameOver = true;
             }
 
+            // Pohyb bosse
+if (state.bossPosition) {
+  let { x, y, direction, isCharging, originalY } = state.bossPosition;
+  
+
+  // Zpracování "výpadu" dolů
+  if (isCharging) {
+    y += 50; // Zvýšení Y pro pohyb dolů
+    if (y >= window.innerHeight - 100) { // Dosáhnutí spodní části obrazovky
+      y = originalY ?? 0; // Vrácení na původní pozici
+      isCharging = false; // Ukončení "výpadu"
+    }
+  } else {
+    
+    if (Math.abs(x - state.playerPosition.x) < 10) {
+      isCharging = true;
+      originalY = y; // Uložení původní Y pozice pro návrat
+    }
+    
+    
+  }
+
+  
+  state.bossPosition = { ...state.bossPosition, x, y, direction, isCharging, originalY, };
+}
+          
               
-              
+            
               
           
             return {
@@ -278,6 +310,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 enemies: updatedEnemies,
                 gameOver: gameOver,
                 playerPosition: newPosition,
+                bossPosition: state.bossPosition,
                 
                 
             };

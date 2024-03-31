@@ -5,6 +5,7 @@ import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 import { playerMovement } from "../components/Player";
 import Bullet from "../components/Bullet";
+import { Boss1 } from "../components/Boss";
 
 
 const BossFight: React.FC = () => {
@@ -31,7 +32,9 @@ const BossFight: React.FC = () => {
             <Player position={state.playerPosition} />
             {state.bullets.map(bullet => (
         <Bullet key={bullet.id} position={bullet} />
+
       ))}
+      <Boss1 position={state.bossPosition} />
         </div>
     );
 };
