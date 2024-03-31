@@ -6,6 +6,7 @@ import Bullet from '../components/Bullet';
 import {Enemy1} from '../components/Enemy';
 import {Enemy2} from '../components/Enemy';
 import { useNavigate } from 'react-router-dom';
+import { playerMovement } from '../components/Player';
 
 
 
@@ -18,55 +19,11 @@ const Gameplay = () => {
   const navigate = useNavigate();
 
   // Pohyb hráče pomocí klávesnice
-  
-  const keys = useRef({
-    ArrowUp: false,
-    ArrowDown: false,
-    ArrowLeft: false,
-    ArrowRight: false,
-    
-  });
-  
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.code === 'Space') {
-      event.preventDefault();
-      dispatch({ type: 'ADD_BULLET', payload: { playerPosition: state.playerPosition } });
-    } else {
-      keys.current = { ...keys.current, [event.key]: true };
-    }
-  };
-  
-  const handleKeyUp = (event: KeyboardEvent) => {
-   
-      keys.current = { ...keys.current, [event.key]: false };
-    
-  };
-  
-  useEffect(() => {
-    const movePlayer = () => {
-      for (const direction in keys.current) {
-        if (direction !== 'Shoot' && keys.current[direction as keyof typeof keys.current]) {
-          dispatch({ type: 'MOVE_PLAYER', payload: { direction } });
-        }
-      }
-    };
-  
-    const intervalId = setInterval(movePlayer, 50); //plynulý pohyb
-    
+  playerMovement();
 
-    
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-  
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [dispatch, keys]);
 
   // práce s logikou z reduceru
+  // Update hry
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch({ type: 'UPDATE_GAME_STATE'});
@@ -75,7 +32,7 @@ const Gameplay = () => {
     return () => clearInterval(interval);
   }, [dispatch]);
 
-
+  // Přidání nepřátel
   useEffect(() => {
     const addEntitiesInterval = setInterval(() => {
       
@@ -86,6 +43,7 @@ const Gameplay = () => {
     return () => clearInterval(addEntitiesInterval);
   }, [dispatch]);
 
+  // Přidání asteroidů
   useEffect(() => {
     const addEntitiesInterval = setInterval(() => {
       dispatch({ type: 'ADD_ASTEROID' });
@@ -96,6 +54,7 @@ const Gameplay = () => {
     return () => clearInterval(addEntitiesInterval);
   }, [dispatch]);
 
+  // Přidání nepřátelských střel
   useEffect(() => {
     const addEntitiesInterval = setInterval(() => {
       
@@ -107,9 +66,12 @@ const Gameplay = () => {
   }, [dispatch]);
 
   
-
+  // Přechod na boss fight
+  if (state.score >= 3) {
+    navigate('/boss');
+  }
   
-  
+  // smrt hráče
   if (state.gameOver) {
     
       navigate('/dead');

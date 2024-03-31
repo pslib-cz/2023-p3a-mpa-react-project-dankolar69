@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
 
+
+//detekce kolize
 function detectCollision(item1: Position, item2: Position) {
     return item1.x < item2.x + 40 &&
         item1.x + 40 > item2.x &&
@@ -30,17 +32,23 @@ export type GameState = {
   gameOver: boolean;
   score: number;
   lives: number;
+  activeDirections: { [code: string]: boolean };
 };
 
 export type GameAction =
-  | { type: 'MOVE_PLAYER'; payload:{direction: string}  }
+  
   | { type: 'ADD_ASTEROID' }
   | { type: 'ADD_BULLET' }
   | { type: 'ADD_ENEMY' }
   | { type: 'UPDATE_GAME_STATE' }
   | { type: 'GAME_OVER' }
   | { type: 'RESET_GAME' }
-  | { type: 'ADD_ENEMY_BULLET' };
+  | { type: 'ADD_ENEMY_BULLET' }
+  | { type: 'MOVE_PLAYER_UP' }
+  | { type: 'MOVE_PLAYER_DOWN' }
+  | { type: 'MOVE_PLAYER_LEFT' }
+  | { type: 'MOVE_PLAYER_RIGHT' }
+  | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } };
 
   export const initialState: GameState = {
     playerPosition: { x: window.innerWidth / 2, y: window.innerHeight / 2, id: uuidv4() },
@@ -51,28 +59,45 @@ export type GameAction =
     gameOver: false,
     score: 0,
     lives: 3,
+    activeDirections: {},
   };
 
-
   const asteroidImages = [asteroid1, asteroid2];
-
+  
 const gameReducer = (state: GameState, action: GameAction): GameState => {
+  
+  //rychlost hráče
+  const step = 20;
     switch (action.type) {
 
         //ovládání hráče
-        case 'MOVE_PLAYER': {
-            const { direction } = action.payload;
-            let newX = state.playerPosition.x;
-            let newY = state.playerPosition.y;
-            const step = 10; 
-
-            if (direction === 'ArrowUp') newY = Math.max(newY - step, 0);
-            if (direction === 'ArrowDown') newY = Math.min(newY + step, window.innerHeight - 50);
-            if (direction === 'ArrowLeft') newX = Math.max(newX - step, 0);
-            if (direction === 'ArrowRight') newX = Math.min(newX + step, window.innerWidth - 50);
-
-            return { ...state, playerPosition: { ...state.playerPosition, x: newX, y: newY } };
-          }
+        case 'MOVE_PLAYER_UP':
+            return {
+              ...state,
+              activeDirections: { ...state.activeDirections, up: true }
+            };
+          case 'MOVE_PLAYER_DOWN':
+            return {
+              ...state,
+              activeDirections: { ...state.activeDirections, down: true }
+            };
+          case 'MOVE_PLAYER_LEFT':
+            return {
+              ...state,
+              activeDirections: { ...state.activeDirections, left: true }
+            };
+          case 'MOVE_PLAYER_RIGHT':
+            return {
+              ...state,
+              activeDirections: { ...state.activeDirections, right: true }
+            };
+          case 'STOP_MOVE_PLAYER':
+            
+            return {
+              ...state,
+              activeDirections: { ...state.activeDirections, [action.payload.direction]: false }
+            };
+      // vytvoření asteroidu
         case 'ADD_ASTEROID':
           const newAsteroid = {
             x: Math.random() * window.innerWidth,
@@ -82,6 +107,19 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           };
           return { ...state, asteroids: [...state.asteroids, newAsteroid] };
 
+      // vytvoření enemy
+        case 'ADD_ENEMY':
+            const direction = Math.random() < 0.5 ? 1 : -1;
+            const newEnemy = {
+              x: Math.random() * window.innerWidth,
+              y: 0,
+              id: uuidv4(),
+              type: Math.random() < 0.5 ? 'enemy1' : 'enemy2', 
+              direction: direction,
+            };
+            return { ...state, enemies: [...state.enemies, newEnemy] };
+
+      // vytvoření střely
         case 'ADD_BULLET':
           const newBullet = {
             x: state.playerPosition.x + 25, 
@@ -90,6 +128,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           };
           return { ...state, bullets: [...state.bullets, newBullet] };
 
+      // vytvoření nepřátelské střely
         case 'ADD_ENEMY_BULLET':
             if (state.enemies.length > 0) {
                 const newEnemyBullets = state.enemies.map(enemy => ({
@@ -101,16 +140,27 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return { ...state, enemyBullets: [...state.enemyBullets, ...newEnemyBullets] };
               }
               return state;
-
+      
+      //aktualizace stavu hry
           case 'UPDATE_GAME_STATE': {
             
             let gameOver = state.gameOver;
             let newLives = state.lives;
+
+            //pohyb hráče
+            const newPosition = { ...state.playerPosition };
+              if (state.activeDirections.up) newPosition.y = Math.max(newPosition.y - step, 0);
+              if (state.activeDirections.down) newPosition.y = Math.min(newPosition.y + step, window.innerHeight - 50);
+              if (state.activeDirections.left) newPosition.x = Math.max(newPosition.x - step, 0);
+              if (state.activeDirections.right) newPosition.x = Math.min(newPosition.x + step, window.innerWidth - 50);
+
+             
+
            //pohyb asteroidů + detekce kolize
             const updatedAsteroids = state.asteroids.map(asteroid => {
               if (!gameOver && detectCollision(asteroid, state.playerPosition)) {
                 newLives -= 1;
-                return null; // null indicates this asteroid should be removed
+                return null; 
               }
               return { ...asteroid, y: asteroid.y + 10 };
             }).filter((asteroid): asteroid is Position => asteroid !== null && asteroid.y < window.innerHeight);
@@ -133,10 +183,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     let newX = enemy.x + (speed * newDirection);
                     const newY = enemy.y + 10;
 
-                    // Kontrola kolize s bočními stěnami a změna směru
-                    if (newX <= 0 || newX >= window.innerWidth - 40) { // Předpokládáme, že šířka enemy1 je 40px
-                      newDirection *= -1; // Změna směru
-                      newX = enemy.x + (speed * newDirection); // Aktualizujeme polohu s novým směrem
+                    
+                    if (newX <= 0 || newX >= window.innerWidth - 40) {
+                      newDirection *= -1; 
+                      newX = enemy.x + (speed * newDirection); 
     }
                     
                     
@@ -149,6 +199,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   x: newX,
                   y: newY,
                   direction: newDirection,
+
                 };
               }}).filter(enemy => enemy.y < window.innerHeight);
 
@@ -214,6 +265,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 enemyBullets: updatedEnemyBullets,
                 enemies: updatedEnemies,
                 gameOver: gameOver,
+                playerPosition: newPosition,
                 
                 
             };
@@ -225,16 +277,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           return { ...state, gameOver: true };
         case 'RESET_GAME':
           return initialState;
-          case 'ADD_ENEMY':
-            const direction = Math.random() < 0.5 ? 1 : -1;
-            const newEnemy = {
-              x: Math.random() * window.innerWidth,
-              y: 0,
-              id: uuidv4(),
-              type: Math.random() < 0.5 ? 'enemy1' : 'enemy2', 
-              direction: direction,
-            };
-            return { ...state, enemies: [...state.enemies, newEnemy] };
+          
           default:
             return state;
         }
