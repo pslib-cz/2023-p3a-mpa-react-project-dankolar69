@@ -12,8 +12,8 @@ const asteroidWidth = 50;
 const asteroidHeight = 50;
 const bulletWidth = 5; 
 const bulletHeight = 40;
-const enemyWidth = 80;
-const enemyHeight = 80;
+const enemyWidth = 70;
+const enemyHeight = 70;
 
 function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number) {
   return (
