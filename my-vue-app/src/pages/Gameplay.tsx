@@ -67,17 +67,19 @@ const Gameplay = () => {
   }, [dispatch]);
 
   
-  // Přechod na boss fight
+  useEffect(() => {
+    // smrt hráče
+    if (state.lives <= 0) {
+      navigate('/dead');
+    }
+    // Přechod na boss fight
   if (state.score >= 3) {
     navigate('/boss');
   }
+  });
   
-  // smrt hráče
-  if (state.gameOver) {
-    
-      navigate('/dead');
-    
-  }
+  
+  
 
   return (
     <div className="gameplay-container">

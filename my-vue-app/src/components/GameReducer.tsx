@@ -12,18 +12,28 @@ const asteroidWidth = 50;
 const asteroidHeight = 50;
 const bulletWidth = 5; 
 const bulletHeight = 40;
-const enemyWidth = 50;
-const enemyHeight = 70;
+const enemyWidth = 100;
+const enemyHeight = 100;
 const bossWidth = 70;
 const bossHeight = 100;
 
-export function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number) {
-  return (
-    obj1.x < obj2.x + width2 &&
-    obj1.x + width1 > obj2.x &&
-    obj1.y < obj2.y + height2 &&
-    obj1.y + height1 > obj2.y
-  );
+function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
+  // lepší detekce pro enemy, které jsou posunuté
+  let obj2AdjustedX = obj2.x + offsetX;
+  let obj2AdjustedY = obj2.y + offsetY;
+
+  let obj1CenterX = obj1.x + width1 / 2;
+  let obj1CenterY = obj1.y + height1 / 2;
+  let obj2CenterX = obj2AdjustedX + width2 / 2;
+  let obj2CenterY = obj2AdjustedY + height2 / 2;
+
+  let distanceX = Math.abs(obj1CenterX - obj2CenterX);
+  let distanceY = Math.abs(obj1CenterY - obj2CenterY);
+
+  let halfWidths = (width1 + width2) / 2;
+  let halfHeights = (height1 + height2) / 2;
+
+  return distanceX < halfWidths && distanceY < halfHeights;
 }
 
 type Position = {
@@ -239,7 +249,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 }
 
                 
-                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight));
+                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight, -50, -80));
                     if (hitEnemyIndex !== -1) {
                     updatedEnemies.splice(hitEnemyIndex, 1); 
                     state.score += 1; 
@@ -376,6 +386,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         }
           
         case 'GAME_OVER':
+          
           return { ...state, gameOver: true };
         case 'RESET_GAME':
           return initialState;

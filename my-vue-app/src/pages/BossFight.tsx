@@ -6,7 +6,7 @@ import { GameContext } from '../providers/ContextProvider';
 import { playerMovement } from "../components/Player";
 import Bullet from "../components/Bullet";
 import { Boss1 } from "../components/Boss";
-import { detectCollision } from "../components/GameReducer";
+
 import { useNavigate } from "react-router-dom";
 
 
@@ -31,11 +31,11 @@ const BossFight: React.FC = () => {
 
   
   // smrt hráče
-  if (state.gameOver) {
-    
-    navigate('/dead');
-  
-}
+  useEffect(() => {
+    if (state.lives <= 0) {
+      navigate('/dead');
+    }
+  });
     
     return (
         <div className="gameplay-container">
