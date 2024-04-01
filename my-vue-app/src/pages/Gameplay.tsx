@@ -26,7 +26,8 @@ const Gameplay = () => {
   // Update hry
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch({ type: 'UPDATE_GAME_STATE'});
+      dispatch({ type: 'UPDATE_GAMEPLAY_STATE'});
+      dispatch({ type: 'UPDATE_PLAYER_MOVEMENT'});
     }, 100); 
 
     return () => clearInterval(interval);
