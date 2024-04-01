@@ -83,8 +83,9 @@ const Player: React.FC<PlayerProps> = ({ position }) => (
       left: position.x,
       height: '50px',
       width: '50px',
+      transition: 'top 0.2s ease-out, left 0.2s ease-out', 
+        transform: 'translateZ(0)',
       
-      transition: 'top 0.2s, left 0.2s',
     }}
       />
   </div>

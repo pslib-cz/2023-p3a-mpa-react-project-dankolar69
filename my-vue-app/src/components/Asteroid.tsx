@@ -18,8 +18,9 @@ const Asteroid: React.FC<AsteroidProps> = ({ position, image }) => (
     overflow: 'hidden',     
     objectFit: 'cover',
     
-    transition: 'top 0.1s, left 0.1s',
-    animation: 'spin 2s linear infinite',
+    boxShadow: '0 0 10px rgba(255,255,255,0.5)', // Přidání stínu
+    transition: 'top 0.2s ease-out, left 0.2s ease-out', // Plynulejší pohyb
+    animation: 'spin 4s linear infinite',
   }}>
     <img
     src={image}
