@@ -49,6 +49,7 @@ type Position = {
     isCharging?: boolean;
     originalY?: number;
     hasCollided?: boolean;
+    
 };
 
 export type GameState = {
@@ -63,6 +64,7 @@ export type GameState = {
   lives: number;
   bossLives: number;
   activeDirections: { [code: string]: boolean };
+  bossPhase: number;
 };
 
 export type GameAction =
@@ -95,6 +97,7 @@ export type GameAction =
     lives: 3,
     bossLives: 10,
     activeDirections: {},
+    bossPhase: 1,
   };
 
   const asteroidImages = [asteroid1, asteroid2];
@@ -352,6 +355,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               
             }
             
+        
+            
             
             
             state.bossPosition = { ...state.bossPosition, x, y, direction, isCharging, originalY, hasCollided};
@@ -376,7 +381,25 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             if (newLives <= 0 && !gameOver) {
               gameOver = true;
             }
-                return{...state, bossPosition: state.bossPosition, bullets: updatedBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives};
+
+
+            const updatedEnemyBullets = state.enemyBullets.map(bullet => {
+              const speed = bullet.type === 'enemy2' ? 60 : 30;
+              const newY = bullet.y + speed;
+      
+              if (
+                      detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
+              ) {
+                  newLives -= 1;
+                  return null;
+                  
+              }
+      
+              return { ...bullet, y: newY };
+          }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
+
+
+                return{...state, bossPosition: state.bossPosition,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives};
         }
 
 

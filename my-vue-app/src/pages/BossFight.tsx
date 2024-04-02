@@ -36,14 +36,14 @@ const BossFight: React.FC = () => {
       navigate('/dead');
     }
     if (state.bossLives <= 0) {
-      navigate('/win');
+      navigate('/victory');
     }
   });
     
     return (
         <div className="gameplay-container">
             <h1 style={{ color: 'white' }}>Boss Fight</h1>
-            <h2 style={{ color: 'white' }}>Boss Phase: 1</h2>
+            <h2 style={{ color: 'white' }}>Boss Phase: {state.bossPhase}</h2>
             <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
             <h2 style={{ color: 'white' }}>Boss Lives: {state.bossLives}</h2>
             <Player position={state.playerPosition} />
@@ -52,6 +52,10 @@ const BossFight: React.FC = () => {
 
       ))}
       <Boss1 position={state.bossPosition} />
+      {state.enemyBullets.map(bullet => (
+        
+        <Bullet key={bullet.id} position={bullet} />
+      ))}
         </div>
     );
 };
