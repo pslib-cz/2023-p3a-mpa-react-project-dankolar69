@@ -3,6 +3,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
+import Bullet from "./Bullet";
 
 
 //detekce kolize
@@ -15,7 +16,7 @@ const bulletHeight = 40;
 const enemyWidth = 100;
 const enemyHeight = 100;
 const bossWidth = 70;
-const bossHeight = 100;
+const bossHeight = 50;
 
 function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
   // lepší detekce pro enemy, které jsou posunuté
@@ -60,6 +61,7 @@ export type GameState = {
   gameOver: boolean;
   score: number;
   lives: number;
+  bossLives: number;
   activeDirections: { [code: string]: boolean };
 };
 
@@ -91,6 +93,7 @@ export type GameAction =
     gameOver: false,
     score: 0,
     lives: 3,
+    bossLives: 10,
     activeDirections: {},
   };
 
@@ -306,6 +309,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
         //aktualizace stavu boss fightu
         case 'UPDATE_BOSSFIGHT_STATE': {
+          let newBossLives = state.bossLives;
           // Pohyb bosse + útok
           if (state.bossPosition ) {
             let { x, y, direction, isCharging, originalY, hasCollided } = state.bossPosition;
@@ -338,17 +342,17 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 console.log(direction)
                 
                 if (x <= 0) {
-                  x = 0; // Zabránění vyjíždění zleva
-                  direction = 1; // Změna směru doprava
+                  x = 0; 
+                  direction = 1; 
                 } else if (x >= window.innerWidth - 100) {
-                  x = window.innerWidth - 100; // Zabránění vyjíždění zprava
-                  direction = -1; // Změna směru na doleva
+                  x = window.innerWidth - 100; 
+                  direction = -1; 
                 }
               }
               
             }
             
-
+            
             
             state.bossPosition = { ...state.bossPosition, x, y, direction, isCharging, originalY, hasCollided};
 }
@@ -359,19 +363,20 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               y: bullet.y - 100, 
             })).filter(bullet => {
               
+              if (detectCollision(bullet, state.bossPosition, bulletWidth, bulletHeight, bossWidth, bossHeight, 0, 0)) {
+                newBossLives -= 1;
+                return null;
+              }
               if (bullet.y <= 0) {
                   return false;
               }
-
-              
-              
 
               return true;
             });; 
             if (newLives <= 0 && !gameOver) {
               gameOver = true;
             }
-                return{...state, bossPosition: state.bossPosition, bullets: updatedBullets, gameOver: gameOver, lives: newLives,};
+                return{...state, bossPosition: state.bossPosition, bullets: updatedBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives};
         }
 
 

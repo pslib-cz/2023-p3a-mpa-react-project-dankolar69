@@ -30,17 +30,22 @@ const BossFight: React.FC = () => {
   }, [dispatch]);
 
   
-  // smrt hráče
+  // smrt hráče nebo výhra
   useEffect(() => {
     if (state.lives <= 0) {
       navigate('/dead');
+    }
+    if (state.bossLives <= 0) {
+      navigate('/win');
     }
   });
     
     return (
         <div className="gameplay-container">
             <h1 style={{ color: 'white' }}>Boss Fight</h1>
+            <h2 style={{ color: 'white' }}>Boss Phase: 1</h2>
             <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
+            <h2 style={{ color: 'white' }}>Boss Lives: {state.bossLives}</h2>
             <Player position={state.playerPosition} />
             {state.bullets.map(bullet => (
         <Bullet key={bullet.id} position={bullet} />
