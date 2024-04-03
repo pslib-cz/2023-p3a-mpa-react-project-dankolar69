@@ -29,15 +29,44 @@ const BossFight: React.FC = () => {
     return () => clearInterval(interval);
   }, [dispatch]);
 
+  if (Math.abs(state.bossPosition.x - state.playerPosition.x) < 30 && !state.showWarning) {
+    // Aktivace varování
+    dispatch({ type: 'SHOW_WARNING', payload: true });
   
+    setTimeout(() => {
+      // Vystřelení střel a skrytí varování po 2 sekundách
+      
+      dispatch({ type: 'SHOW_WARNING', payload: false });
+    }, 2000);
+  }
+  useEffect(() => {
+    
+    const moveBoss = () => {
+      // Zajištění, že se pohyb vyvolá pouze ve fázi 2 a boss není v procesu útoku (isCharging)
+      if (state.bossPhase === 2 && !state.bossPosition.isCharging) {
+        const directions = ['up', 'down', 'left', 'right'];
+        const direction = directions[Math.floor(Math.random() * directions.length)];
+        dispatch({
+          type: 'MOVE_BOSS',
+          payload: {
+            direction: direction,
+            movementSpeed: 10
+          }
+        });
+      }
+    }
+    // Nastavení intervalu pro pravidelnou aktualizaci
+    const intervalId = setInterval(moveBoss, 1000); // Aktualizuje pozici bosse každou sekundu
+  
+    // Cleanup funkce pro odstranění intervalu při odmountování komponenty
+    return () => clearInterval(intervalId);
+  }, [dispatch, state.bossPhase, state.bossPosition.isCharging]); 
   // smrt hráče nebo výhra
   useEffect(() => {
     if (state.lives <= 0) {
       navigate('/dead');
     }
-    if (state.bossLives <= 0) {
-      navigate('/victory');
-    }
+    
   });
     
     return (
@@ -56,6 +85,9 @@ const BossFight: React.FC = () => {
         
         <Bullet key={bullet.id} position={bullet} />
       ))}
+      {state.showWarning && (
+  <div className="warning-triangle"> {/* Představte si, že zde máte CSS nebo SVG pro zobrazení trojúhelníku */}</div>
+)}
         </div>
     );
 };
