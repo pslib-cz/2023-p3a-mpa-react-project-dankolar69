@@ -26,19 +26,12 @@ const BossFight: React.FC = () => {
       dispatch({ type: 'UPDATE_PLAYER_MOVEMENT'});
     }, 100); 
 
+    
     return () => clearInterval(interval);
+
   }, [dispatch]);
 
-  if (Math.abs(state.bossPosition.x - state.playerPosition.x) < 30 && !state.showWarning) {
-    // Aktivace varování
-    dispatch({ type: 'SHOW_WARNING', payload: true });
   
-    setTimeout(() => {
-      // Vystřelení střel a skrytí varování po 2 sekundách
-      
-      dispatch({ type: 'SHOW_WARNING', payload: false });
-    }, 2000);
-  }
   useEffect(() => {
     
     const moveBoss = () => {
@@ -50,7 +43,7 @@ const BossFight: React.FC = () => {
           type: 'MOVE_BOSS',
           payload: {
             direction: direction,
-            movementSpeed: 10
+            movementSpeed: 100,
           }
         });
       }
@@ -68,26 +61,33 @@ const BossFight: React.FC = () => {
     }
     
   });
+  const bossHealthWidth = (state.bossLives / 3) * 20 ;
+  
     
     return (
         <div className="gameplay-container">
             <h1 style={{ color: 'white' }}>Boss Fight</h1>
             <h2 style={{ color: 'white' }}>Boss Phase: {state.bossPhase}</h2>
             <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
-            <h2 style={{ color: 'white' }}>Boss Lives: {state.bossLives}</h2>
+            
             <Player position={state.playerPosition} />
             {state.bullets.map(bullet => (
         <Bullet key={bullet.id} position={bullet} />
 
       ))}
+      <div style={{ position: 'absolute', top: state.bossPosition.y - 15, left: state.bossPosition.x +55, transform: 'translateX(-50%)' }}>
+        
+        <div className="boss-health-bar-container">
+          <div className="boss-health-bar" style={{ width: bossHealthWidth }}></div>
+        </div>
+      </div>
       <Boss1 position={state.bossPosition} />
+      
       {state.enemyBullets.map(bullet => (
         
         <Bullet key={bullet.id} position={bullet} />
       ))}
-      {state.showWarning && (
-  <div className="warning-triangle"> {/* Představte si, že zde máte CSS nebo SVG pro zobrazení trojúhelníku */}</div>
-)}
+      
         </div>
     );
 };

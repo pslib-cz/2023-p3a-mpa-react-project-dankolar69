@@ -3,6 +3,9 @@ import playerImage from '../assets/images/playerImage.png';
 import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 
+import engine2 from '../assets/images/engine2.png';
+import engine from '../assets/images/engine.png';
+
 type PlayerProps = {
   position: { x: number; y: number; };
 };
@@ -71,8 +74,27 @@ export function playerMovement(): void {
   }, [dispatch]);
 }
 
+function getFlameImageByMovement(activeDirections: { [key: string]: boolean }) {
+  const directionsCount = Object.values(activeDirections).filter(Boolean).length;
 
-const Player: React.FC<PlayerProps> = ({ position }) => (
+  // Simple logic: More directions pressed = higher intensity flame
+  if (directionsCount > 1) {
+    return engine2; // Most intense flame
+  } else if (directionsCount === 1) {
+    return engine; // Medium flame
+  }
+  else {
+    return null;
+  }
+}
+
+const Player: React.FC<PlayerProps> = ({ position }) => {
+  const { state } = useContext(GameContext);
+  
+  const flameImage = getFlameImageByMovement(state.activeDirections);
+
+return (
+
   <div>
     <img
     src={playerImage}
@@ -87,8 +109,24 @@ const Player: React.FC<PlayerProps> = ({ position }) => (
         transform: 'translateZ(0)',
       
     }}
+
       />
+      {flameImage && (
+      <img
+        src={flameImage}
+        alt="Flame"
+        style={{
+          position: 'absolute',
+          bottom: '-10px',
+          transform: 'translateX(0%)',
+          transition: 'top 0.2s ease-out, left 0.2s ease-out',
+          top: position.y +40,
+          left: position.x +15,
+        }}
+      />
+      )}
   </div>
-);
+)};
+
 
 export default Player;

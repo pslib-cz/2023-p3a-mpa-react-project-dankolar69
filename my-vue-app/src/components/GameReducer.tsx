@@ -3,7 +3,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
-import Bullet from "./Bullet";
+
 
 
 //detekce kolize
@@ -87,7 +87,8 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_DOWN' }
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
-  | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } };
+  | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
+  
 
   export const initialState: GameState = {
     playerPosition: { x: window.innerWidth / 2, y: window.innerHeight / 2, id: uuidv4() },
@@ -99,7 +100,7 @@ export type GameAction =
     gameOver: false,
     score: 0,
     lives: 3,
-    bossLives: 3,
+    bossLives: 15,
     activeDirections: {},
     bossPhase: 1,
     showWarning: false,
@@ -366,7 +367,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             }
             if(state.bossLives <= 0) {
               state.bossPhase = 2;
-              newBossLives = 5;
+              isCharging = false;
+              newBossLives = 15;
               state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
             }
         
@@ -380,18 +382,21 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
           }
           if(state.bossPhase === 2) {
-            
+            let { x, y, direction, isCharging } = state.bossPosition;
 
+           isCharging = false;
             
             if (Math.abs(state.bossPosition.x - state.playerPosition.x) < 30) {
-              // Zde nastavíme stav pro zobrazení červeného trojúhelníku, například:
-              state.showWarning = true; // Předpokládáme, že 'showWarning' je část vašeho stavu
+
+
+              // Boss začne střílet
           
-              // Po krátkém časovém intervalu (použijte například setTimeout v reálné implementaci), vystřelte 3 střely
-              const angles = [-45, 0, 45]; // Úhly pro střely
-              angles.forEach(angle => {
-                const speedX = Math.cos(angle * Math.PI / 180) * 5;
-                const speedY = Math.sin(angle * Math.PI / 180) * 5;
+              
+              
+              const speedX = (state.playerPosition.x - state.bossPosition.x) / 100;
+              const speedY = (state.playerPosition.y - state.bossPosition.y) / 100;
+                
+              [0, 1, 2].forEach(() => {
                 state.enemyBullets.push({
                   x: state.bossPosition.x + bossWidth / 2,
                   y: state.bossPosition.y + bossHeight / 2,
@@ -400,13 +405,15 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   directionY: speedY,
                 });
               });
-          
-              // Po vystřelení resetujte 'showWarning' zpět na false
-              state.showWarning = false;
               
+          
+              
+              state.bossPosition = { ...state.bossPosition, x, y, direction, isCharging};
 
 
           }}
+          
+          
           
 
             //pohyb střel hráče + detekce kolize
@@ -461,6 +468,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         }
         case 'MOVE_BOSS': {
           if(state.bossPhase === 2) {
+            
             const { direction, movementSpeed } = action.payload;
             let { x, y } = state.bossPosition;
         
@@ -471,19 +479,35 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               case 'right': x += movementSpeed; break;
             }
         
-            x = Math.max(0, Math.min(window.innerWidth - bossWidth, x));
-            y = Math.max(0, Math.min(window.innerHeight - bossHeight, y));
-        
-            return {
-              ...state,
-              bossPosition: { ...state.bossPosition, x, y }
-            };
-          }
-          return state;
+            // Horizontální pohyb směrem k hráči
+              if (state.playerPosition.x > x) {
+                x += movementSpeed; // Pohyb doprava
+              } else if (state.playerPosition.x < x) {
+                x -= movementSpeed; // Pohyb doleva
+              }
+
+              // Vertikální pohyb s omezením, aby zůstal nad polovinou obrazovky
+              const screenHeight = window.innerHeight;
+              if (y > screenHeight / 2) {
+                y -= movementSpeed; // Pohyb nahoru, pokud je pod polovinou obrazovky
+              } else {
+                // Volitelně: Přidat logiku pro drobné vertikální pohyby nebo jiné chování, pokud chcete
+              }
+
+              x = Math.max(0, Math.min(window.innerWidth - bossWidth, x));
+              y = Math.max(0, Math.min(screenHeight / 2, y)); // Ujistěte se, že boss zůstává nad polovinou obrazovky
+
+              return {
+                ...state,
+                bossPosition: { ...state.bossPosition, x, y, isCharging: false }
+              };
+            }
+            return state;
         }
         case 'GAME_OVER':
           
           return { ...state, gameOver: true };
+        
         case 'RESET_GAME':
           return initialState;
           
