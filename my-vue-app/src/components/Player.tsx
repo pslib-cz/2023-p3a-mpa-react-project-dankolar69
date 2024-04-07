@@ -14,7 +14,14 @@ type PlayerProps = {
 // Funkce pro pohyb hráče pomocí klávesnice
 export function playerMovement(): void {
   const { state, dispatch } = useContext(GameContext);
+
+  // omezení střelby
+  let lastBulletTime = 0;
+  const bulletCooldown = 500; 
+
+
   const handleKeyDown = (event: KeyboardEvent) => {
+    const currentTime = Date.now();
     switch(event.code) {
       case 'ArrowUp':
         dispatch({ type: 'MOVE_PLAYER_UP' });
@@ -30,8 +37,11 @@ export function playerMovement(): void {
         break;
       case 'Space':
         event.preventDefault(); 
-        console.log('Space pressed');
-        dispatch({ type: 'ADD_BULLET', payload: { playerPosition: state.playerPosition } });
+        if (currentTime - lastBulletTime >= bulletCooldown) {
+          console.log('Space pressed');
+          dispatch({ type: 'ADD_BULLET', payload: { playerPosition: state.playerPosition } });
+          lastBulletTime = currentTime;
+        }
         break;
       
     }
