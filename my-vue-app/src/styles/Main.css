@@ -43,3 +43,7 @@
   .game-over {
     text-align: center;
   }
+  .title{
+    color: white;
+    font-size: 70px;
+  }
