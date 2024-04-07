@@ -21,18 +21,18 @@
 
   .boss-health-bar-container {
     position: absolute;
-    width: 60px; /* Match or adjust according to the boss width */
+    width: 60px; 
     height: 8px;
     background-color: #555;
     border-radius: 5px;
-    top: -10px; /* Adjust based on the boss's size to position above */
-    
-    transform: translateX(-50%);
+    top: -10px; 
+    transition: 0.5s ease-out, 0.5s ease-out;
+    transform: translateX(-75%);
   }
   
   .boss-health-bar {
     height: 100%;
-    background-color: #4CAF50; /* Green color */
+    background-color: #4CAF50;
     border-radius: 5px;
     transition: width 0.5s ease-out, transform 0.5s ease-out;
   }

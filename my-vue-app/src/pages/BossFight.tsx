@@ -65,7 +65,7 @@ const BossFight: React.FC = () => {
   });
 
   
-  const bossHealthWidth = (state.bossLives / 3) * 20 ;
+  const bossHealthWidth = (state.bossLives / 10) * 100 ;
   
     
     return (
@@ -79,12 +79,12 @@ const BossFight: React.FC = () => {
         <Bullet key={bullet.id} position={bullet} />
 
       ))}
-      <div style={{ position: 'absolute', top: state.bossPosition.y - 15, left: state.bossPosition.x +55, transform: 'translateX(-50%)' }}>
+      
         
-        <div className="boss-health-bar-container">
+        <div style={{  top: state.bossPosition.y - 55 , left: state.bossPosition.x +55 }} className="boss-health-bar-container">
           <div className="boss-health-bar" style={{ width: bossHealthWidth }}></div>
         </div>
-      </div>
+      
       <Boss1 position={state.bossPosition} />
       
       {state.enemyBullets.map(bullet => (

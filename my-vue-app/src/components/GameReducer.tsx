@@ -106,7 +106,7 @@ export type GameAction =
     gameOver: false,
     score: 0,
     lives: 3,
-    bossLives: 15,
+    bossLives: 10,
     activeDirections: {},
     bossPhase: 1,
     showWarning: false,
@@ -337,8 +337,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
               // Zpracování "výpadu" dolů
               if (isCharging) {
-                y += 50; // rychlost výpadu
-                if (y >= window.innerHeight - 50) { // Dosáhnutí spodní části obrazovky
+                y += 70; // rychlost výpadu
+                if (y >= window.innerHeight + 20) { // Dosáhnutí spodní části obrazovky
                   y = originalY ?? 0; 
                   isCharging = false;
                   ;
@@ -358,7 +358,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 
                 if (!isCharging) {
                   
-                  x += ((direction as number) || 1) * 50; // rychlost pohybu do stran
+                  x += ((direction as number) || 1) * 70; // rychlost pohybu do stran
                   console.log(direction)
                   
                   if (x <= 0) {
@@ -374,7 +374,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             if(state.bossLives <= 0) {
               state.bossPhase = 2;
               isCharging = false;
-              newBossLives = 15;
+              newBossLives = 10;
               state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
             }
         
