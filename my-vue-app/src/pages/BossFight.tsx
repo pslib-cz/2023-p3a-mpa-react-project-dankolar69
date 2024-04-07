@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 const BossFight: React.FC = () => {
     const { state, dispatch } = useContext(GameContext);
     const navigate = useNavigate();
+    
 
 
     // Pohyb hráče pomocí klávesnice
@@ -47,6 +48,7 @@ const BossFight: React.FC = () => {
           }
         });
       }
+      
     }
     // Nastavení intervalu pro pravidelnou aktualizaci
     const intervalId = setInterval(moveBoss, 1000); // Aktualizuje pozici bosse každou sekundu
@@ -61,6 +63,8 @@ const BossFight: React.FC = () => {
     }
     
   });
+
+  
   const bossHealthWidth = (state.bossLives / 3) * 20 ;
   
     

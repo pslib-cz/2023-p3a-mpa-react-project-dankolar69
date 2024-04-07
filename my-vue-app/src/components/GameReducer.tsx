@@ -18,23 +18,29 @@ const enemyHeight = 100;
 const bossWidth = 120;
 const bossHeight = 120;
 
+
 function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
   // lepší detekce pro enemy, které jsou posunuté
-  let obj2AdjustedX = obj2.x + offsetX;
-  let obj2AdjustedY = obj2.y + offsetY;
+  const obj2AdjustedX = obj2.x + offsetX;
+  const obj2AdjustedY = obj2.y + offsetY;
 
-  let obj1CenterX = obj1.x + width1 / 2;
-  let obj1CenterY = obj1.y + height1 / 2;
-  let obj2CenterX = obj2AdjustedX + width2 / 2;
-  let obj2CenterY = obj2AdjustedY + height2 / 2;
+  // Vypočítáme hranice pro oba objekty
+  const obj1Left = obj1.x;
+  const obj1Right = obj1.x + width1;
+  const obj1Top = obj1.y;
+  const obj1Bottom = obj1.y + height1;
 
-  let distanceX = Math.abs(obj1CenterX - obj2CenterX);
-  let distanceY = Math.abs(obj1CenterY - obj2CenterY);
+  const obj2Left = obj2AdjustedX;
+  const obj2Right = obj2AdjustedX + width2;
+  const obj2Top = obj2AdjustedY;
+  const obj2Bottom = obj2AdjustedY + height2;
 
-  let halfWidths = (width1 + width2) / 2;
-  let halfHeights = (height1 + height2) / 2;
+  // Kontrola, zda se hranice překrývají
+  const collideX = obj1Right > obj2Left && obj1Left < obj2Right;
+  const collideY = obj1Bottom > obj2Top && obj1Top < obj2Bottom;
 
-  return distanceX < halfWidths && distanceY < halfHeights;
+  // Pokud se překrývají obě osy, došlo k kolizi
+  return collideX && collideY;
 }
 
 type Position = {
@@ -91,7 +97,7 @@ export type GameAction =
   
 
   export const initialState: GameState = {
-    playerPosition: { x: window.innerWidth / 2, y: window.innerHeight / 2, id: uuidv4() },
+    playerPosition: { x: window.innerWidth /2, y: window.innerHeight / 2, id: uuidv4() },
     bossPosition: {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() },
     asteroids: [],
     bullets: [],
@@ -179,7 +185,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         case 'ADD_ENEMY_BULLET':
             if (state.enemies.length > 0) {
                 const newEnemyBullets = state.enemies.map(enemy => ({
-                    x: enemy.x + 50,
+                    x: enemy.x + 45,
                     y: enemy.y,
                     id: uuidv4(),
                     type: enemy.type ?? 'enemy1',
@@ -220,7 +226,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     };
                   } else {
                     //enemy1
-                    const speed = 30;
+                    const speed = 20;
                     let newDirection = enemy.direction ?? 1;
                     let newX = enemy.x + (speed * newDirection);
                     const newY = enemy.y + 10;
@@ -332,10 +338,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               // Zpracování "výpadu" dolů
               if (isCharging) {
                 y += 50; // rychlost výpadu
-                if (y >= window.innerHeight - 100) { // Dosáhnutí spodní části obrazovky
+                if (y >= window.innerHeight - 50) { // Dosáhnutí spodní části obrazovky
                   y = originalY ?? 0; 
                   isCharging = false;
-                  hasCollided = false;
+                  ;
                 }
                 if (!hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight,-50, -120)) {
                   newLives -= 1;
@@ -386,7 +392,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
            isCharging = false;
             
-            if (Math.abs(state.bossPosition.x - state.playerPosition.x) < 30) {
+            if (Math.abs(state.bossPosition.x - state.playerPosition.x) < 40) {
 
 
               // Boss začne střílet

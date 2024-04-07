@@ -70,12 +70,14 @@ const Gameplay = () => {
   useEffect(() => {
     // smrt hráče
     if (state.lives <= 0) {
+      
       navigate('/dead');
     }
     // Přechod na boss fight
-  if (state.score >= 3) {
-    navigate('/boss');
-  }
+    if (state.score >= 3) {
+      state.enemyBullets = [];
+      navigate('/boss');
+    }
   });
   
   
