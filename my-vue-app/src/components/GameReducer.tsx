@@ -44,6 +44,21 @@ function detectCollision(obj1: Position, obj2: Position, width1: number, height1
   return collideX && collideY;
 }
 
+type Upgrade = {
+  name: string;
+  price: number;
+  owned?: boolean;
+
+}
+
+const upgrades: Upgrade[] = [
+  { name: 'Extra life', price: 10, owned: false},
+  { name: 'Fire rate', price: 15, owned: false},
+  {name: 'Invincibility', price: 20, owned: false},
+  {name: 'Big Shot', price: 25, owned: false},
+  
+
+];
 type Position = {
     x: number;
     y: number;
@@ -80,11 +95,7 @@ export type GameState = {
   // pro budoucí rozšíření
   currentLevel: number;
   unlockedLevels: number[];
-  upgrades: {
-    extraLife: boolean;
-    fireRate: boolean;
-    
-  };
+  upgrades: Upgrade[];
   currency: number;
 };
 
@@ -126,10 +137,7 @@ export type GameAction =
     // pro budoucí rozšíření
     currentLevel: 1,
     unlockedLevels: [1],
-    upgrades: {
-      extraLife: false,
-      fireRate: false,
-    },
+    upgrades: upgrades,
     currency: 0,
     
 
