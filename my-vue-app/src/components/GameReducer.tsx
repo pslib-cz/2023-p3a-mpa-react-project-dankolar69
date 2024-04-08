@@ -3,6 +3,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
+import { Navigate } from "react-router-dom";
 
 
 
@@ -57,6 +58,7 @@ type Position = {
     hasCollided?: boolean;
     directionX?: number;
     directionY?: number;
+    lastShotTime?: number;
     
 };
 
@@ -106,7 +108,7 @@ export type GameAction =
     gameOver: false,
     score: 0,
     lives: 3,
-    bossLives: 10,
+    bossLives: 3,
     activeDirections: {},
     bossPhase: 1,
     showWarning: false,
@@ -116,6 +118,7 @@ export type GameAction =
   const asteroidImages = [asteroid1, asteroid2];
   
 const gameReducer = (state: GameState, action: GameAction): GameState => {
+  
   
   //rychlost hráče
   const step = 20;
@@ -326,7 +329,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         //aktualizace stavu boss fightu
         case 'UPDATE_BOSSFIGHT_STATE': {
           let newBossLives = state.bossLives;
-
+          
+          // Boss fáze 1
           if(state.bossPhase === 1) {
 
             
@@ -374,7 +378,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             if(state.bossLives <= 0) {
               state.bossPhase = 2;
               isCharging = false;
-              newBossLives = 10;
+              newBossLives = 3;
               state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
             }
         
@@ -387,7 +391,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
 
           }
-          if(state.bossPhase === 2) {
+          // Boss fáze 2
+          else if(state.bossPhase === 2) {
             let { x, y, direction, isCharging } = state.bossPosition;
 
            isCharging = false;
@@ -411,14 +416,77 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   directionY: speedY,
                 });
               });
-              
+              if(state.bossLives <= 0) {
+                state.bossPhase = 3;
+                
+                newBossLives = 10;
+                state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
+              }
           
               
               state.bossPosition = { ...state.bossPosition, x, y, direction, isCharging};
 
 
           }}
+
+          // Boss fáze 3
+          else if (state.bossPhase === 3) {
+            
+            
+            if (state.enemies.filter(e => e.type === 'enemy3').length < 4) {
+              for (let i = 0; i < 3; i++) {
+                state.enemies.push({
+                  x: Math.random() * window.innerWidth,
+                  y: Math.random() * (window.innerHeight / 4), // Startují z horní čtvrtiny obrazovky
+                  id: uuidv4(),
+                  type: 'enemy3',
+                  directionX: Math.random() < 0.5 ? 1 : -1, 
+                  directionY: Math.random() < 0.5 ? 1 : -1, 
+                  lastShotTime: 0,
+                });
+              }
+            }
+            const currentTime = Date.now();
+
+            // Logika pro 'Enemy3' střelbu
+            state.enemies = state.enemies.map(enemy => {
+              if (enemy.type === 'enemy3') {
+                
+                const movementSpeed = 7; 
+            
+                
+                const directionX = (state.playerPosition.x > enemy.x ? 1 : -1) * Math.random();
+                const directionY = (state.playerPosition.y > enemy.y ? 1 : -1) * Math.random();
+            
+                // Omezení střelby
+                if (!enemy.lastShotTime || currentTime - enemy.lastShotTime > 3000) {
+                  
+                  const angle = Math.atan2(state.playerPosition.y - enemy.y, state.playerPosition.x - enemy.x);
+                  const bulletSpeed = 5;
+                  state.enemyBullets.push({
+                    x: enemy.x,
+                    y: enemy.y,
+                    id: uuidv4(),
+                    directionX: Math.cos(angle) * bulletSpeed,
+                    directionY: Math.sin(angle) * bulletSpeed,
+                    type: 'enemy3',
+                  });
+            
+                  enemy.lastShotTime = currentTime; 
+                }
+                
+                // Aktualizace pozice nepřítele
+                return {
+                  ...enemy,
+                  x: enemy.x + directionX * movementSpeed,
+                  y: enemy.y + directionY * movementSpeed,
+                };
+              } else {
+                return enemy; 
+              }
+            });
           
+          }
           
           
 
@@ -432,17 +500,51 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 newBossLives -= 1;
                 return null;
               }
+              
+
               if (bullet.y <= 0) {
                   return false;
               }
+              // Detekce kolize s enemy3 ve třetí fázi boss fightu
+              const hitEnemyIndex1 = state.enemies.findIndex(enemy =>
+                  enemy.type === 'enemy3' &&
+                  detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight)
+                );
+
+                if (hitEnemyIndex1 !== -1) {
+                  state.enemies.splice(hitEnemyIndex1, 1); // Odstranění enemy3 po zásahu
+                  state.score += 1; 
+                  return false; 
+                }
+
 
               return true;
             });; 
             if (newLives <= 0 && !gameOver) {
               gameOver = true;
             }
-
-
+            
+            //pohyb nepřátel + detekce kolize
+            const updatedEnemies = state.enemies.map((enemy) => {
+              if (enemy.type === 'enemy3') {
+                
+                const directionX = state.playerPosition.x > enemy.x ? 1 : -1;
+                const directionY = state.playerPosition.y > enemy.y ? 1 : -1;
+                
+                
+                return {
+                  ...enemy,
+                  
+                  x: enemy.x + directionX * (Math.random() * 5),
+                  y: enemy.y + directionY * (Math.random() * 5),
+                };
+              } else {
+                
+                return enemy;
+              }
+            });
+            
+            //pohyb nepřátelských střel + detekce kolize
             const updatedEnemyBullets = state.enemyBullets.map(bullet => {
               const speed = bullet.type === 'enemy2' ? 60 : 30;
               const newY = bullet.y + speed;
@@ -459,7 +561,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
 
 
-                return{...state, bossPosition: state.bossPosition,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives, };
+                return{...state, bossPosition: state.bossPosition,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives, enemies: updatedEnemies, bossPhase: state.bossPhase};
         }
       
 
@@ -473,7 +575,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               return { ...state, playerPosition: newPosition };
         }
         case 'MOVE_BOSS': {
-          if(state.bossPhase === 2) {
+            if(state.bossPhase === 2 || state.bossPhase === 3) {
             
             const { direction, movementSpeed } = action.payload;
             let { x, y } = state.bossPosition;
@@ -487,21 +589,19 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         
             // Horizontální pohyb směrem k hráči
               if (state.playerPosition.x > x) {
-                x += movementSpeed; // Pohyb doprava
+                x += movementSpeed; 
               } else if (state.playerPosition.x < x) {
-                x -= movementSpeed; // Pohyb doleva
+                x -= movementSpeed; 
               }
 
               // Vertikální pohyb s omezením, aby zůstal nad polovinou obrazovky
               const screenHeight = window.innerHeight;
               if (y > screenHeight / 2) {
-                y -= movementSpeed; // Pohyb nahoru, pokud je pod polovinou obrazovky
-              } else {
-                // Volitelně: Přidat logiku pro drobné vertikální pohyby nebo jiné chování, pokud chcete
-              }
+                y -= movementSpeed; 
+              } 
 
               x = Math.max(0, Math.min(window.innerWidth - bossWidth, x));
-              y = Math.max(0, Math.min(screenHeight / 2, y)); // Ujistěte se, že boss zůstává nad polovinou obrazovky
+              y = Math.max(0, Math.min(screenHeight / 2, y)); 
 
               return {
                 ...state,

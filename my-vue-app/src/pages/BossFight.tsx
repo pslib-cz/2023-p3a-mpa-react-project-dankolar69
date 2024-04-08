@@ -6,7 +6,7 @@ import { GameContext } from '../providers/ContextProvider';
 import { playerMovement } from "../components/Player";
 import Bullet from "../components/Bullet";
 import { Boss1 } from "../components/Boss";
-
+import { Enemy3 } from "../components/Enemy";
 import { useNavigate } from "react-router-dom";
 
 
@@ -37,7 +37,7 @@ const BossFight: React.FC = () => {
     
     const moveBoss = () => {
       // Zajištění, že se pohyb vyvolá pouze ve fázi 2 a boss není v procesu útoku (isCharging)
-      if (state.bossPhase === 2 && !state.bossPosition.isCharging) {
+      if (state.bossPhase === 2 && !state.bossPosition.isCharging || state.bossPhase === 3 && !state.bossPosition.isCharging) {
         const directions = ['up', 'down', 'left', 'right'];
         const direction = directions[Math.floor(Math.random() * directions.length)];
         dispatch({
@@ -60,6 +60,9 @@ const BossFight: React.FC = () => {
   useEffect(() => {
     if (state.lives <= 0) {
       navigate('/dead');
+    }
+    if (state.bossLives <= 0 && state.bossPhase === 3) {
+      navigate('/victory');
     }
     
   });
@@ -86,7 +89,8 @@ const BossFight: React.FC = () => {
         </div>
       
       <Boss1 position={state.bossPosition} />
-      
+
+      {state.enemies.map(enemy => (enemy.type === 'enemy3' ? <Enemy3 key={enemy.id} position={enemy} /> : null))}
       {state.enemyBullets.map(bullet => (
         
         <Bullet key={bullet.id} position={bullet} />
