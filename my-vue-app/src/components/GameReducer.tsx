@@ -75,7 +75,17 @@ export type GameState = {
   bossLives: number;
   activeDirections: { [code: string]: boolean };
   bossPhase: number;
-  showWarning: boolean;
+
+
+  // pro budoucí rozšíření
+  currentLevel: number;
+  unlockedLevels: number[];
+  upgrades: {
+    extraLife: boolean;
+    fireRate: boolean;
+    
+  };
+  currency: number;
 };
 
 export type GameAction =
@@ -111,7 +121,17 @@ export type GameAction =
     bossLives: 3,
     activeDirections: {},
     bossPhase: 1,
-    showWarning: false,
+
+
+    // pro budoucí rozšíření
+    currentLevel: 1,
+    unlockedLevels: [1],
+    upgrades: {
+      extraLife: false,
+      fireRate: false,
+    },
+    currency: 0,
+    
 
   };
 
