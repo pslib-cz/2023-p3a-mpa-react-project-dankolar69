@@ -14,9 +14,11 @@ import { Link } from "react-router-dom";
                 </button>
                 
             </Link>
-            <button className="button">
-                    <a>Settings</a>
-            </button>
+            <Link to="/shop" className="link">
+                <button className="button">
+                    <a>Shop</a>
+                </button>
+            </Link>
             <button className="button">
                     <a>Quit</a>
             </button>

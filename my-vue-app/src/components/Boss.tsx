@@ -20,7 +20,7 @@ type BossProps = {
     }}>
       <img
       src={boss1}
-      alt="Enemy"
+      alt="Boss"
       style={{
         height: '100%', 
         width: '100%', 

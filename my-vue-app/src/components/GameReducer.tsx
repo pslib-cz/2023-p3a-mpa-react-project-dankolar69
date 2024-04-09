@@ -51,7 +51,7 @@ type Upgrade = {
 
 }
 
-const upgrades: Upgrade[] = [
+export const upgrades: Upgrade[] = [
   { name: 'Extra life', price: 10, owned: false},
   { name: 'Fire rate', price: 15, owned: false},
   {name: 'Invincibility', price: 20, owned: false},
