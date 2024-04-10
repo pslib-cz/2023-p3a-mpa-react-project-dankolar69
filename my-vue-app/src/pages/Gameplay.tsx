@@ -8,6 +8,7 @@ import {Enemy2} from '../components/Enemy';
 import { useNavigate } from 'react-router-dom';
 import { playerMovement } from '../components/Player';
 import InvincibilityTimer from '../components/InvicibilityTimer';
+import AudioPlayer from '../components/AudioPlayer';
 
 
 
@@ -75,7 +76,7 @@ const Gameplay = () => {
       navigate('/dead');
     }
     // Přechod na boss fight
-    if (state.score >= 3) {
+    if (state.score >= 10) {
       state.enemyBullets = [];
       navigate('/boss');
     }
@@ -90,6 +91,7 @@ const Gameplay = () => {
       <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
       <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
       <InvincibilityTimer />
+      <AudioPlayer tracks={['../src/assets/audio/song1.ogg', '../src/assets/audio/song2.ogg']} autoPlay={true} />
 
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
