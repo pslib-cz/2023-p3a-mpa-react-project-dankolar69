@@ -1,6 +1,6 @@
 import React from 'react';
 import playerImage from '../assets/images/playerImage.png';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 
 import engine2 from '../assets/images/engine2.png';
@@ -16,8 +16,14 @@ export function playerMovement(): void {
   const { state, dispatch } = useContext(GameContext);
 
   // omezení střelby
-  let lastBulletTime = 0;
-  const bulletCooldown = 500; 
+  const lastBulletTime = useRef(0);
+  let bulletCooldown = 500; 
+
+  // Zkontroluje, zda hráč vlastní upgrade "Fire rate" a upraví cooldown střelby
+  const fireRateUpgrade = state.upgrades.find(upgrade => upgrade.name === 'Fire rate' && upgrade.owned);
+  if (fireRateUpgrade) {
+    bulletCooldown = 200;
+  }
 
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -37,10 +43,10 @@ export function playerMovement(): void {
         break;
       case 'Space':
         event.preventDefault(); 
-        if (currentTime - lastBulletTime >= bulletCooldown) {
+        if (currentTime - lastBulletTime.current >= bulletCooldown) {
           console.log('Space pressed');
           dispatch({ type: 'ADD_BULLET', payload: { playerPosition: state.playerPosition } });
-          lastBulletTime = currentTime;
+          lastBulletTime.current = currentTime;
         }
         break;
       

@@ -86,6 +86,7 @@ const Gameplay = () => {
   return (
     <div className="gameplay-container">
       <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
+      <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
       <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
 
       <Player  position={state.playerPosition} />

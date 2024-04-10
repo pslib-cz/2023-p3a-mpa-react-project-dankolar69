@@ -226,7 +226,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               }
               return state;
 
-        // koupení upgradu
+        // koupení upgradu + logika
         case 'PURCHASE_UPGRADE':
 
           const { upgradeIndex, price } = action.payload;
@@ -238,6 +238,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           const newUpgrades = state.upgrades.map((upgrade, index) => {
             if (index === upgradeIndex) {
               
+              // Přidá jeden život
+              if(upgrade.name === 'Extra life') {
+                state.lives += 1; 
+              }
               return { ...upgrade, owned: true }; // Nastaví `owned` na `true` pro zakoupený upgrade
             }
             return upgrade;
@@ -671,12 +675,21 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           return { ...state, gameOver: true };
         
         case 'RESET_GAME':
-          return {
+          const initialStateWithUpgrades = {
             ...initialState,
-            // Zachová currency a upgrades
             currency: state.currency,
             upgrades: state.upgrades,
+            lives: initialState.lives,
           };
+        
+          // Kontrola, zda hráč vlastní upgrade "Extra life"
+          const extraLifeUpgradeOwned = initialStateWithUpgrades.upgrades.some(upgrade => upgrade.name === 'Extra life' && upgrade.owned);
+          if (extraLifeUpgradeOwned) {
+            initialStateWithUpgrades.lives += 1; 
+          }
+        
+          return initialStateWithUpgrades;
+        
           
           default:
             return state;
