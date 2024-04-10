@@ -117,7 +117,7 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
-  | { type: 'PURCHASE_UPGRADE'; payload: { upgradeIndex: number; price: number; } };
+  | { type: 'PURCHASE_UPGRADE'; payload: { upgradeIndex: number; } };
   
 
   export const initialState: GameState = {
@@ -229,7 +229,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         // koupení upgradu + logika
         case 'PURCHASE_UPGRADE':
 
-          const { upgradeIndex, price } = action.payload;
+          const { upgradeIndex } = action.payload;
           const upgrade = state.upgrades[upgradeIndex];
           if (upgrade.owned) {
             
@@ -250,7 +250,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           return {
             ...state,
             upgrades: newUpgrades,
-            currency: state.currency - price,
+            currency: state.currency - upgrade.price,
             // Zde předpokládáme, že cena upgrade byla již odečtena v případě, že hráč měl dostatek měny
           };
                   
