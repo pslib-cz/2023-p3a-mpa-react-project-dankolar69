@@ -117,6 +117,7 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
+  | { type: 'PURCHASE_UPGRADE'; payload: { upgradeIndex: number; price: number; } };
   
 
   export const initialState: GameState = {
@@ -224,6 +225,32 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return { ...state, enemyBullets: [...state.enemyBullets, ...newEnemyBullets] };
               }
               return state;
+
+        // koupení upgradu
+        case 'PURCHASE_UPGRADE':
+
+          const { upgradeIndex, price } = action.payload;
+          const upgrade = state.upgrades[upgradeIndex];
+          if (upgrade.owned) {
+            
+            return state;
+          }
+          const newUpgrades = state.upgrades.map((upgrade, index) => {
+            if (index === upgradeIndex) {
+              
+              return { ...upgrade, owned: true }; // Nastaví `owned` na `true` pro zakoupený upgrade
+            }
+            return upgrade;
+          });
+        
+          return {
+            ...state,
+            upgrades: newUpgrades,
+            currency: state.currency - price,
+            // Zde předpokládáme, že cena upgrade byla již odečtena v případě, že hráč měl dostatek měny
+          };
+                  
+               
       
       
       //aktualizace stavu hry
@@ -303,6 +330,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     if (hitEnemyIndex !== -1) {
                     updatedEnemies.splice(hitEnemyIndex, 1); 
                     state.score += 1; 
+                    state.currency += 10;
                     return false; 
                     }
                 
@@ -643,7 +671,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           return { ...state, gameOver: true };
         
         case 'RESET_GAME':
-          return initialState;
+          return {
+            ...initialState,
+            // Zachová currency a upgrades
+            currency: state.currency,
+            upgrades: state.upgrades,
+          };
           
           default:
             return state;
