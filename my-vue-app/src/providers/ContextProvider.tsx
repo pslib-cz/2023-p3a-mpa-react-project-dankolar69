@@ -17,6 +17,7 @@ export const GameProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   return (
     <GameContext.Provider value={{ state, dispatch }}>
     {children}
+    
   </GameContext.Provider>
   );
 };

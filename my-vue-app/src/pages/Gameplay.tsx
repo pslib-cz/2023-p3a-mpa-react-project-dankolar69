@@ -91,7 +91,7 @@ const Gameplay = () => {
       <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
       <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
       <InvincibilityTimer />
-      <AudioPlayer tracks={['../src/assets/audio/song1.ogg', '../src/assets/audio/song2.ogg']} autoPlay={true} />
+      <AudioPlayer  />
 
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (

@@ -10,6 +10,7 @@ import DeadScreen from '../pages/DeadScreen';
 import Shop from '../pages/Shop';
 
 
+
 const AppRoutes: React.FC = () => {
   return (
     <Router>

@@ -77,7 +77,7 @@ const BossFight: React.FC = () => {
             <h1 style={{ color: 'white' }}>Boss Fight</h1>
             <h2 style={{ color: 'white' }}>Boss Phase: {state.bossPhase}</h2>
             <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
-            <AudioPlayer tracks={['../src/assets/audio/boss1.mp3']} autoPlay={true} />
+            <AudioPlayer  />
 
             
             <Player position={state.playerPosition} />
