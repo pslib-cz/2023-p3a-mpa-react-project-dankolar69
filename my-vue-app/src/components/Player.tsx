@@ -41,6 +41,7 @@ export function playerMovement(): void {
       case 'ArrowRight':
         dispatch({ type: 'MOVE_PLAYER_RIGHT' });
         break;
+      
       case 'Space':
         event.preventDefault(); 
         if (currentTime - lastBulletTime.current >= bulletCooldown) {
@@ -49,6 +50,34 @@ export function playerMovement(): void {
           lastBulletTime.current = currentTime;
         }
         break;
+
+        case 'KeyQ':
+          if (!state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned)) {
+            dispatch({ type: 'ACTIVATE_INVINCIBILITY', payload: { duration: 10, cooldown: 30 } }); // Předpokládáme 10s neviditelnost a 30s cooldown
+            let invincibilityDuration = 10;
+        
+            const invincibilityTimer = setInterval(() => {
+              invincibilityDuration -= 1;
+              dispatch({ type: 'DECREMENT_INVINCIBILITY_TIMER', payload: { timeLeft: invincibilityDuration } });
+        
+              if (invincibilityDuration <= 0) {
+                clearInterval(invincibilityTimer);
+                dispatch({ type: 'RESET_INVINCIBILITY' });
+        
+                let cooldownDuration = 30;
+                const cooldownTimer = setInterval(() => {
+                  cooldownDuration -= 1;
+                  dispatch({ type: 'DECREMENT_COOLDOWN_TIMER', payload: { timeLeft: cooldownDuration } });
+        
+                  if (cooldownDuration <= 0) {
+                    clearInterval(cooldownTimer);
+                    dispatch({ type: 'RESET_INVINCIBILITY_COOLDOWN' });
+                  }
+                }, 1000);
+              }
+            }, 1000);
+          }
+          break;
       
     }
   };
@@ -68,6 +97,8 @@ export function playerMovement(): void {
             direction = 'right';
             break;
         case 'Space':
+            return;
+        case 'KeyQ':
             return;
         default:
             return; 
@@ -123,6 +154,7 @@ return (
       width: '50px',
       transition: 'top 0.2s ease-out, left 0.2s ease-out', 
         transform: 'translateZ(0)',
+        opacity: state.isInvincible ? 0.5 : 1,
       
     }}
 

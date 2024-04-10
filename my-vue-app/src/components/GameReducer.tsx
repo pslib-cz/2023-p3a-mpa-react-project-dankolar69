@@ -90,7 +90,10 @@ export type GameState = {
   bossLives: number;
   activeDirections: { [code: string]: boolean };
   bossPhase: number;
-
+  isInvincible: boolean;
+  invincibilityCooldown: boolean;
+  invincibilityTimeLeft: number;
+  invincibilityCooldownTimeLeft: number;
 
   // pro budoucí rozšíření
   currentLevel: number;
@@ -116,8 +119,14 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_DOWN' }
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
+  | { type: 'ACTIVATE_INVINCIBILITY'; payload: { duration: number; cooldown: number; } }
+  | { type: 'RESET_INVINCIBILITY' }
+  | {type: 'RESET_INVINCIBILITY_COOLDOWN'}
+  | {type: 'DECREMENT_INVINCIBILITY_TIMER'; payload: { timeLeft: number; }}
+  | {type: 'DECREMENT_COOLDOWN_TIMER'; payload: { timeLeft: number; }}
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
   | { type: 'PURCHASE_UPGRADE'; payload: { upgradeIndex: number; } };
+ 
   
 
   export const initialState: GameState = {
@@ -133,6 +142,10 @@ export type GameAction =
     bossLives: 3,
     activeDirections: {},
     bossPhase: 1,
+    isInvincible: false,
+    invincibilityCooldown: false,
+    invincibilityTimeLeft: 10,
+    invincibilityCooldownTimeLeft: 30,
 
 
     // pro budoucí rozšíření
@@ -254,7 +267,41 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             // Zde předpokládáme, že cena upgrade byla již odečtena v případě, že hráč měl dostatek měny
           };
                   
-               
+          case 'ACTIVATE_INVINCIBILITY':
+            if (!state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned)) {
+              return {
+                ...state,
+                isInvincible: true,
+                invincibilityCooldown: true,
+                invincibilityTimeLeft: action.payload.duration, // 10 sekund
+                invincibilityCooldownTimeLeft: action.payload.cooldown,
+              };
+            }
+            return state;
+          
+          
+          case 'RESET_INVINCIBILITY':
+            return {
+              ...state,
+              isInvincible: false,
+            };
+          
+          case 'RESET_INVINCIBILITY_COOLDOWN':
+            return {
+              ...state,
+              invincibilityCooldown: false,
+            };
+            case 'DECREMENT_INVINCIBILITY_TIMER':
+              return {
+                ...state,
+                invincibilityTimeLeft: action.payload.timeLeft,
+              };
+            
+            case 'DECREMENT_COOLDOWN_TIMER':
+              return {
+                ...state,
+                invincibilityCooldownTimeLeft: action.payload.timeLeft,
+              };
       
       
       //aktualizace stavu hry
@@ -268,7 +315,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
            //pohyb asteroidů + detekce kolize
             const updatedAsteroids = state.asteroids.map(asteroid => {
-              if (!gameOver && detectCollision(asteroid, state.playerPosition, asteroidWidth, asteroidHeight, playerWidth, playerHeight)) {
+              if (!state.isInvincible && detectCollision(asteroid, state.playerPosition, asteroidWidth, asteroidHeight, playerWidth, playerHeight)) {
                 newLives -= 1;
                 return null; 
               }
@@ -350,7 +397,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 const newY = bullet.y + speed;
         
                 if (
-                        detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
+                  !state.isInvincible && detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
                 ) {
                     newLives -= 1;
                     return null;
@@ -407,7 +454,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   isCharging = false;
                   ;
                 }
-                if (!hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight,-50, -120)) {
+                if (!state.isInvincible && !hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight,-50, -120)) {
                   newLives -= 1;
                   hasCollided = true;
                 }
@@ -610,7 +657,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               const newY = bullet.y + speed;
       
               if (
-                      detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
+                !state.isInvincible && detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
               ) {
                   newLives -= 1;
                   return null;

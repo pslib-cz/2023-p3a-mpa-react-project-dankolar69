@@ -7,6 +7,7 @@ import {Enemy1} from '../components/Enemy';
 import {Enemy2} from '../components/Enemy';
 import { useNavigate } from 'react-router-dom';
 import { playerMovement } from '../components/Player';
+import InvincibilityTimer from '../components/InvicibilityTimer';
 
 
 
@@ -88,6 +89,7 @@ const Gameplay = () => {
       <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
       <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
       <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
+      <InvincibilityTimer />
 
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
