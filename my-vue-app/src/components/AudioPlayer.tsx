@@ -6,16 +6,21 @@ const AudioPlayer: React.FC = () => {
 
   const [audio] = useState(new Audio());
 
-    const togglePlay = () => {
-      if (audio) {
-        if (isPlaying) {
-          audio.pause();
-        } else {
-          audio.play();
-        }
-        setIsPlaying(!isPlaying);
+  const togglePlay = () => {
+    if (audio) {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        audio.play().then(() => {
+          setIsPlaying(true);
+        }).catch(e => {
+          console.error('Playback failed.', e);
+          setIsPlaying(false);
+        });
       }
-    };
+    }
+  };
 
   useEffect(() => {
     const trackMap: Record<string, string> = {
@@ -25,17 +30,22 @@ const AudioPlayer: React.FC = () => {
     };
     audio.pause();
     const currentTrack = trackMap[location.pathname];
-        if (currentTrack) {
-            audio.src = currentTrack;
-            audio.load();
-            if (isPlaying) {
-                audio.play().catch(e => {console.error('Playback failed.', e);setIsPlaying(false);});
-            }
+    if (currentTrack) {
+      audio.src = currentTrack;
+      audio.load();
+      audio.oncanplaythrough = () => {  
+        if (isPlaying) {
+          audio.play().catch(e => {
+            console.error('Playback failed.', e);
+            setIsPlaying(false);
+          });
         }
+      }
+    }
 
         return () => {
           audio.pause();
-          audio.currentTime = 0;
+          
         };
     }, [location.pathname, isPlaying, audio]);
 
