@@ -22,25 +22,19 @@ const bossHeight = 120;
 
 function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
   // lepší detekce pro enemy, které jsou posunuté
-  const obj2AdjustedX = obj2.x + offsetX;
-  const obj2AdjustedY = obj2.y + offsetY;
-
-  // Vypočítáme hranice pro oba objekty
-  const obj1Left = obj1.x;
-  const obj1Right = obj1.x + width1;
+  const obj1FutureLeft = obj1.x;
+  const obj1FutureRight = obj1.x + width1;
   const obj1Top = obj1.y;
   const obj1Bottom = obj1.y + height1;
 
-  const obj2Left = obj2AdjustedX;
-  const obj2Right = obj2AdjustedX + width2;
-  const obj2Top = obj2AdjustedY;
-  const obj2Bottom = obj2AdjustedY + height2;
+  const obj2FutureLeft = obj2.x;
+  const obj2FutureRight = obj2.x + width2;
+  const obj2Top = obj2.y;
+  const obj2Bottom = obj2.y + height2;
 
-  // Kontrola, zda se hranice překrývají
-  const collideX = obj1Right > obj2Left && obj1Left < obj2Right;
-  const collideY = obj1Bottom > obj2Top && obj1Top < obj2Bottom;
+  const collideX = (obj1FutureRight > obj2FutureLeft && obj1FutureLeft < obj2FutureRight);
+  const collideY = (obj1Bottom > obj2Top && obj1Top < obj2Bottom);
 
-  // Pokud se překrývají obě osy, došlo k kolizi
   return collideX && collideY;
 }
 
