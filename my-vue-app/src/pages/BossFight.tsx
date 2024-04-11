@@ -4,7 +4,7 @@ import Player from "../components/Player";
 import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 import { playerMovement } from "../components/Player";
-import Bullet from "../components/Bullet";
+import {MegaBullet, Bullet} from "../components/Bullet";
 import { Boss1 } from "../components/Boss";
 import { Enemy3 } from "../components/Enemy";
 import { useNavigate } from "react-router-dom";
@@ -84,6 +84,9 @@ const BossFight: React.FC = () => {
             {state.bullets.map(bullet => (
         <Bullet key={bullet.id} position={bullet} />
 
+      ))}
+      {state.megaBullets.map(bullet => (
+        <MegaBullet key={bullet.id} position={bullet} />
       ))}
       
         

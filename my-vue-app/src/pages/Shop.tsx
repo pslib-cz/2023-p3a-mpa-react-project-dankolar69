@@ -1,5 +1,5 @@
 import React from 'react';
-import { upgrades } from '../components/GameReducer';
+import { upgrades } from '../reducers/GameReducer';
 import { useContext } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 import '../styles/Gameplay.css';

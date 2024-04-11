@@ -24,6 +24,8 @@ export function playerMovement(): void {
   if (fireRateUpgrade) {
     bulletCooldown = 200;
   }
+  const invincibilityTimerRef = useRef<number | null>(null);
+  const bigShotCooldownTimerRef = useRef<number | null>(null);
 
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -52,34 +54,60 @@ export function playerMovement(): void {
         break;
 
         case 'KeyQ':
-          if (!state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned)) {
-            dispatch({ type: 'ACTIVATE_INVINCIBILITY', payload: { duration: 10, cooldown: 30 } }); // Předpokládáme 10s neviditelnost a 30s cooldown
-            let invincibilityDuration = 10;
-        
-            const invincibilityTimer = setInterval(() => {
-              invincibilityDuration -= 1;
-              dispatch({ type: 'DECREMENT_INVINCIBILITY_TIMER', payload: { timeLeft: invincibilityDuration } });
-        
-              if (invincibilityDuration <= 0) {
-                clearInterval(invincibilityTimer);
-                dispatch({ type: 'RESET_INVINCIBILITY' });
-        
-                let cooldownDuration = 30;
-                const cooldownTimer = setInterval(() => {
-                  cooldownDuration -= 1;
-                  dispatch({ type: 'DECREMENT_COOLDOWN_TIMER', payload: { timeLeft: cooldownDuration } });
-        
-                  if (cooldownDuration <= 0) {
-                    clearInterval(cooldownTimer);
-                    dispatch({ type: 'RESET_INVINCIBILITY_COOLDOWN' });
+            if (!state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned)) {
+              dispatch({ type: 'ACTIVATE_INVINCIBILITY', payload: { duration: 10, cooldown: 30 } });
+
+              if (!invincibilityTimerRef.current) {
+                let invincibilityDuration = 10;
+                invincibilityTimerRef.current = setInterval(() => {
+                  invincibilityDuration -= 1;
+                  dispatch({ type: 'DECREMENT_INVINCIBILITY_TIMER', payload: { timeLeft: invincibilityDuration } });
+
+                  if (invincibilityDuration <= 0) {
+                    clearInterval(invincibilityTimerRef.current!);
+                    invincibilityTimerRef.current = null;
+                    dispatch({ type: 'RESET_INVINCIBILITY' });
+
+                    // Start cooldown timer
+                    let cooldownDuration = 30;
+                    invincibilityTimerRef.current = setInterval(() => {
+                      cooldownDuration -= 1;
+                      dispatch({ type: 'DECREMENT_COOLDOWN_TIMER', payload: { timeLeft: cooldownDuration } });
+
+                      if (cooldownDuration <= 0) {
+                        clearInterval(invincibilityTimerRef.current!);
+                        invincibilityTimerRef.current = null;
+                        dispatch({ type: 'RESET_INVINCIBILITY_COOLDOWN' });
+                      }
+                    }, 1000);
                   }
                 }, 1000);
               }
-            }, 1000);
+            }
+            break;
+
+  case 'KeyE':
+    if (!state.bigShotCooldown && state.upgrades.find(upgrade => upgrade.name === 'Big Shot' && upgrade.owned)) {
+      if (!bigShotCooldownTimerRef.current) {
+        dispatch({ type: 'ACTIVATE_BIG_SHOT', payload: { cooldown: 30 } }); // Start cooldown
+        dispatch({ type: 'ADD_MEGA_BULLET', payload: { playerPosition: state.playerPosition } }); // Fire mega bullet
+  
+        let bigShotCooldownDuration = 30;
+        bigShotCooldownTimerRef.current = setInterval(() => {
+          bigShotCooldownDuration -= 1;
+          dispatch({ type: 'DECREMENT_BIG_SHOT_COOLDOWN_TIMER', payload: { timeLeft: bigShotCooldownDuration } });
+  
+          if (bigShotCooldownDuration <= 0) {
+            clearInterval(bigShotCooldownTimerRef.current!);
+            bigShotCooldownTimerRef.current = null;
+            dispatch({ type: 'RESET_BIG_SHOT_COOLDOWN' }); // End cooldown
           }
-          break;
-      
+        }, 1000);
+      }
     }
+    break;
+        
+      }
   };
   const handleKeyUp = (event: KeyboardEvent) => {
     let direction;
@@ -100,6 +128,8 @@ export function playerMovement(): void {
             return;
         case 'KeyQ':
             return;
+        case 'KeyE':
+            return;
         default:
             return; 
     }
@@ -117,6 +147,12 @@ export function playerMovement(): void {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      if (invincibilityTimerRef.current) {
+        clearInterval(invincibilityTimerRef.current);
+      }
+      if (bigShotCooldownTimerRef.current) {
+        clearInterval(bigShotCooldownTimerRef.current);
+      }
     };
   }, [dispatch]);
 }

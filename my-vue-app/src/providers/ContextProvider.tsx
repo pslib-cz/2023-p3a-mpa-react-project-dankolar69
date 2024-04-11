@@ -1,7 +1,7 @@
 import React, { createContext, useState, ReactNode, useReducer } from 'react';
-import { GameState} from '../components/GameReducer';
-import gameReducer from '../components/GameReducer';
-import { initialState } from '../components/GameReducer';
+import { GameState} from '../reducers/GameReducer';
+import gameReducer from '../reducers/GameReducer';
+import { initialState } from '../reducers/GameReducer';
 
 
 

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef , useState} from 'react';
 import { GameContext } from '../providers/ContextProvider'; 
 import Player from '../components/Player';
 import Asteroid from '../components/Asteroid';
-import Bullet from '../components/Bullet';
+import {Bullet, MegaBullet} from '../components/Bullet';
 import {Enemy1} from '../components/Enemy';
 import {Enemy2} from '../components/Enemy';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { playerMovement } from '../components/Player';
 import InvincibilityTimer from '../components/InvicibilityTimer';
 import AudioPlayer from '../components/AudioPlayer';
 
+import BigShotTimer from '../components/BigShotTimer';
 
 
 
@@ -91,14 +92,20 @@ const Gameplay = () => {
       <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
       <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
       <InvincibilityTimer />
+      <BigShotTimer />
       <AudioPlayer  />
 
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
         <Asteroid key={asteroid.id} position={asteroid} image={asteroid.image} />
       ))}
-      {state.bullets.map(bullet => (
-        <Bullet key={bullet.id} position={bullet} />
+      {state.bullets.map(bullet =>  
+  
+  <Bullet key={bullet.id} position={bullet} />
+
+)}
+      {state.megaBullets.map(megaBullet => (
+        <MegaBullet key={megaBullet.id} position={megaBullet} />
       ))}
       {state.enemies.map(enemy => (
         enemy.type === 'enemy1' ? <Enemy1 key={enemy.id} position={enemy} /> : <Enemy2 key={enemy.id} position={enemy} /> 

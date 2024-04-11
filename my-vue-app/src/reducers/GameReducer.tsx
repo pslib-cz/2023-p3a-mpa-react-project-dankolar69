@@ -75,6 +75,7 @@ type Position = {
     directionY?: number;
     lastShotTime?: number;
     
+    
 };
 
 export type GameState = {
@@ -84,16 +85,23 @@ export type GameState = {
   bullets: Position[];
   enemies: Position[];
   enemyBullets: Position[];
+  megaBullets: Position[];
   gameOver: boolean;
   score: number;
   lives: number;
   bossLives: number;
   activeDirections: { [code: string]: boolean };
   bossPhase: number;
+
+  //ability
   isInvincible: boolean;
   invincibilityCooldown: boolean;
   invincibilityTimeLeft: number;
   invincibilityCooldownTimeLeft: number;
+
+  bigShotCooldown: boolean;
+  
+  bigShotCooldownTimeLeft: number,
 
   // pro budoucí rozšíření
   currentLevel: number;
@@ -119,11 +127,17 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_DOWN' }
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
+  // Ability
   | { type: 'ACTIVATE_INVINCIBILITY'; payload: { duration: number; cooldown: number; } }
   | { type: 'RESET_INVINCIBILITY' }
   | {type: 'RESET_INVINCIBILITY_COOLDOWN'}
   | {type: 'DECREMENT_INVINCIBILITY_TIMER'; payload: { timeLeft: number; }}
   | {type: 'DECREMENT_COOLDOWN_TIMER'; payload: { timeLeft: number; }}
+  | {type: 'ACTIVATE_BIG_SHOT' ; payload: { cooldown: number; }}
+    | {type: 'RESET_BIG_SHOT_COOLDOWN'}
+    | {type: 'DECREMENT_BIG_SHOT_COOLDOWN_TIMER'; payload: { timeLeft: number; }}
+    | { type: 'ADD_MEGA_BULLET'; payload: { playerPosition: Position } }
+
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
   | { type: 'PURCHASE_UPGRADE'; payload: { upgradeIndex: number; } };
  
@@ -136,23 +150,28 @@ export type GameAction =
     bullets: [],
     enemies: [],
     enemyBullets: [],
+    megaBullets: [],
     gameOver: false,
     score: 0,
     lives: 3,
     bossLives: 3,
     activeDirections: {},
     bossPhase: 1,
+
+    //ability
     isInvincible: false,
     invincibilityCooldown: false,
     invincibilityTimeLeft: 10,
     invincibilityCooldownTimeLeft: 30,
-
+    bigShotCooldown: false,
+    
+    bigShotCooldownTimeLeft: 30,
 
     // pro budoucí rozšíření
     currentLevel: 1,
     unlockedLevels: [1],
     upgrades: upgrades,
-    currency: 0,
+    currency: 50,
     
 
   };
@@ -255,6 +274,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               if(upgrade.name === 'Extra life') {
                 state.lives += 1; 
               }
+              
               return { ...upgrade, owned: true }; // Nastaví `owned` na `true` pro zakoupený upgrade
             }
             return upgrade;
@@ -292,6 +312,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               invincibilityCooldown: false,
             };
             case 'DECREMENT_INVINCIBILITY_TIMER':
+              console.log('DECREMENT_INVINCIBILITY_TIMER payload:', action.payload);
               return {
                 ...state,
                 invincibilityTimeLeft: action.payload.timeLeft,
@@ -302,8 +323,45 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 ...state,
                 invincibilityCooldownTimeLeft: action.payload.timeLeft,
               };
+              case 'ACTIVATE_BIG_SHOT':
+                
+                  console.log('ACTIVATE_BIG_SHOT payload:', action.payload)
+    return {
+      ...state,
+     bigShotCooldown: true,
+      bigShotCooldownTimeLeft: action.payload.cooldown, 
+    
+  }
+  
+
+  case 'DECREMENT_BIG_SHOT_COOLDOWN_TIMER':
+    console.log('DECREMENT_BIG_SHOT_COOLDOWN_TIMER payload:', action.payload);
+    
+      return {
+        ...state,
+        
+        bigShotCooldownTimeLeft: action.payload.timeLeft,
+      };
+    
+    
+          
+          case 'RESET_BIG_SHOT_COOLDOWN':
+            return {
+              ...state,
+              bigShotCooldown: false,
+             
+            };
+         
+            case 'ADD_MEGA_BULLET':
+  const newMegaBullet = {
+    x: state.playerPosition.x + 25, // Nastavte správnou pozici x
+    y: state.playerPosition.y - 20, // Nastavte správnou pozici y
+    id: uuidv4(),
+    
+  };
+  return { ...state, megaBullets: [...state.megaBullets, newMegaBullet] };
       
-      
+  
       //aktualizace stavu hry
           case 'UPDATE_GAMEPLAY_STATE': {
             
@@ -389,6 +447,30 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               
                 return true;
               });; 
+
+            // Big Shot
+            let updatedMegaBullets = state.megaBullets.map(megaBullet => ({
+              ...megaBullet,
+              y: megaBullet.y - 100,
+            })).filter(megaBullet => {
+              if (megaBullet.y <= 0) {
+                return false;
+              }
+              for (let asteroid of state.asteroids) {
+                if (detectCollision(megaBullet, asteroid, bulletWidth, bulletHeight, asteroidWidth, asteroidHeight)) {
+                  return false;
+                }
+
+              }
+              const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(megaBullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight));
+              if (hitEnemyIndex !== -1) {
+                updatedEnemies.splice(hitEnemyIndex, 1); 
+                state.score += 1; 
+                state.currency += 10;
+                return false; 
+              }
+              return true;
+            });
             
               
              //pohyb nepřátelských střel + detekce kolize
@@ -425,6 +507,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 enemyBullets: updatedEnemyBullets,
                 enemies: updatedEnemies,
                 gameOver: gameOver,
+                megaBullets: updatedMegaBullets,
                 
                 
                 
@@ -630,7 +713,20 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             if (newLives <= 0 && !gameOver) {
               gameOver = true;
             }
-            
+            let updatedMegaBullets = state.megaBullets.map(megaBullet => ({
+              ...megaBullet,
+              y: megaBullet.y - 100,
+            })).filter(megaBullet => {
+              if (megaBullet.y <= 0) {
+                return false;
+              }
+              if (detectCollision(megaBullet, state.bossPosition, bulletWidth, bulletHeight, bossWidth, bossHeight, 0, 0)) {
+                newBossLives -= 3;
+                return null;
+              }
+              return true;
+            });
+
             //pohyb nepřátel + detekce kolize
             const updatedEnemies = state.enemies.map((enemy) => {
               if (enemy.type === 'enemy3') {
@@ -668,7 +764,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
 
 
-                return{...state, bossPosition: state.bossPosition,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives, enemies: updatedEnemies, bossPhase: state.bossPhase};
+                return{...state, bossPosition: state.bossPosition,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, megaBullets: updatedMegaBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives, enemies: updatedEnemies, bossPhase: state.bossPhase};
         }
       
 
@@ -727,6 +823,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             currency: state.currency,
             upgrades: state.upgrades,
             lives: initialState.lives,
+
           };
         
           // Kontrola, zda hráč vlastní upgrade "Extra life"
@@ -734,7 +831,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           if (extraLifeUpgradeOwned) {
             initialStateWithUpgrades.lives += 1; 
           }
-        
+          
           return initialStateWithUpgrades;
         
           

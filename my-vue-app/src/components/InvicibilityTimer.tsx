@@ -7,7 +7,7 @@ const InvincibilityTimer = () => {
   
     return (
       <div style={{color:"white"}}>
-        {!state.isInvincible && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned) && <p>Use Invicibility by Q</p>}
+        {!state.isInvincible && !state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned) && <p>Use Invicibility by Q</p>}
         {state.isInvincible && <p>Neviditelnost končí za: {state.invincibilityTimeLeft} s</p>}
         {!state.isInvincible && state.invincibilityCooldown && <p>Možnost znovu použít neviditelnost za: {state.invincibilityCooldownTimeLeft} s</p>}
       </div>
