@@ -22,8 +22,8 @@ const bossHeight = 120;
 
 function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
   // lepší detekce pro enemy, které jsou posunuté
-  const obj1FutureLeft = obj1.x;
-  const obj1FutureRight = obj1.x + width1;
+  const obj1FutureLeft = obj1.x - offsetY;
+  const obj1FutureRight = obj1.x + width1 + offsetX;
   const obj1Top = obj1.y;
   const obj1Bottom = obj1.y + height1;
 
@@ -429,7 +429,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 }
 
                 
-                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight));
+                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight, 50, 0));
                     if (hitEnemyIndex !== -1) {
                     updatedEnemies.splice(hitEnemyIndex, 1); 
                     state.score += 1; 
