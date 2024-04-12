@@ -9,6 +9,8 @@ import { Boss1 } from "../components/Boss";
 import { Enemy3 } from "../components/Enemy";
 import { useNavigate } from "react-router-dom";
 import AudioPlayer from "../components/AudioPlayer";
+import InvincibilityTimer from "../components/InvisibilityTimer";
+import BigShotTimer from "../components/BigShotTimer";
 
 
 const BossFight: React.FC = () => {
@@ -77,6 +79,8 @@ const BossFight: React.FC = () => {
             <h1 style={{ color: 'white' }}>Boss Fight</h1>
             <h2 style={{ color: 'white' }}>Boss Phase: {state.bossPhase}</h2>
             <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
+            <InvincibilityTimer />
+            <BigShotTimer />
             <AudioPlayer  />
 
             
