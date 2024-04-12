@@ -1,8 +1,8 @@
-import React from 'react';
-import { upgrades } from '../reducers/GameReducer';
+
 import { useContext } from 'react';
 import { GameContext } from '../providers/ContextProvider';
-import '../styles/Gameplay.css';
+import '../styles/Shop.css';
+import { Link } from 'react-router-dom';
 
 const Shop = () => {
     const { state, dispatch } = useContext(GameContext);
@@ -17,7 +17,7 @@ const Shop = () => {
         }
 
         if (state.currency >= selectedUpgrade.price && !selectedUpgrade.owned) {
-            // Dispatch action to purchase upgrade
+            
             dispatch({
                 type: 'PURCHASE_UPGRADE',
                 payload: { upgradeIndex, price: selectedUpgrade.price }
@@ -30,17 +30,24 @@ const Shop = () => {
     };
     
         return (
-            <div className="shop__container">
-                <h1 className="title" style={{color:'black'}}>Shop for upgrades</h1>
-                <p>Current currency: {state.currency}</p>
-                <div className="shop__list">
-                    {state.upgrades.map((upgrade, index) => (
-                        <div className="shop__item" key={index}>
-                            <h2>{upgrade.name}</h2>
-                            <p>Price: {upgrade.price}</p>
-                            <button onClick={() => handleBuyUpgrade(index) } disabled={upgrade.owned}>Buy</button>
-                        </div>
-                    ))}
+            <div className="shop__bg">
+                <div className="shop__container">
+                    <h1 className="shop__title">Shop for upgrades</h1>
+                    <p>Current currency: {state.currency}</p>
+                    <div className="shop__list">
+                        {state.upgrades.map((upgrade, index) => (
+                            <div className="shop__item" key={index}>
+                                <h2>{upgrade.name}</h2>
+                                <p>Price: {upgrade.price}</p>
+                                <button onClick={() => handleBuyUpgrade(index) } disabled={upgrade.owned}>Buy</button>
+                            </div>
+                        ))}
+                    </div>
+                    <Link to="/" className="link">
+                        <button className="shop__back__button">
+                            Back to menu
+                        </button>
+                    </Link>
                 </div>
             </div>
         );

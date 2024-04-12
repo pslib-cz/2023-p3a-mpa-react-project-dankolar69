@@ -2,12 +2,12 @@ import React from "react";
 import { useContext } from "react";
 import { GameContext } from "../providers/ContextProvider";
 
-const InvincibilityTimer = () => {
+const InvisibilityTimer = () => {
   const { state } = useContext(GameContext);
 
-  // Calculate the stroke dash array based on the time left and max time
+  
   const calculateProgress = (timeLeft: number, maxTime:number) => {
-    const radius = 18; // radius of the circle
+    const radius = 18; 
     const circumference = 2 * Math.PI * radius;
     const offset = ((maxTime - timeLeft) / maxTime) * circumference;
     return { circumference, offset };
@@ -15,7 +15,7 @@ const InvincibilityTimer = () => {
 
   return (
     <div style={{ color: "white", fontFamily: "Arial, sans-serif" }}>
-      {!state.isInvincible && !state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned) && <p>Press Q to use Invincibility</p>}
+      {!state.isInvincible && !state.invisibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invisibility' && upgrade.owned) && <p>Press Q to use invisibility</p>}
 
       {state.isInvincible && (
         <div>
@@ -23,24 +23,24 @@ const InvincibilityTimer = () => {
           <svg width="50" height="50" viewBox="0 0 40 40">
             <circle stroke="grey" strokeWidth="4" fill="transparent" r="18" cx="20" cy="20" />
             <circle stroke="green" strokeWidth="4" fill="transparent" r="18" cx="20" cy="20"
-              strokeDasharray={calculateProgress(state.invincibilityTimeLeft, 10).circumference}
-              strokeDashoffset={calculateProgress(state.invincibilityTimeLeft, 10).offset}
+              strokeDasharray={calculateProgress(state.invisibilityTimeLeft, 10).circumference}
+              strokeDashoffset={calculateProgress(state.invisibilityTimeLeft, 10).offset}
               transform="rotate(-90 20 20)" />
-            <text x="50%" y="50%" textAnchor="middle" stroke="#fff" strokeWidth="1px" dy=".3em">{state.invincibilityTimeLeft}s</text>
+            <text x="50%" y="50%" textAnchor="middle" stroke="#fff" strokeWidth="1px" dy=".3em">{state.invisibilityTimeLeft}s</text>
           </svg>
         </div>
       )}
 
-      {!state.isInvincible && state.invincibilityCooldown && (
+      {!state.isInvincible && state.invisibilityCooldown && (
         <div>
           
           <svg width="50" height="50" viewBox="0 0 40 40">
             <circle stroke="grey" strokeWidth="4" fill="transparent" r="18" cx="20" cy="20" />
             <circle stroke="red" strokeWidth="4" fill="transparent" r="18" cx="20" cy="20"
-              strokeDasharray={calculateProgress(state.invincibilityCooldownTimeLeft, 30).circumference}
-              strokeDashoffset={calculateProgress(state.invincibilityCooldownTimeLeft, 30).offset}
+              strokeDasharray={calculateProgress(state.invisibilityCooldownTimeLeft, 30).circumference}
+              strokeDashoffset={calculateProgress(state.invisibilityCooldownTimeLeft, 30).offset}
               transform="rotate(-90 20 20)" />
-            <text x="50%" y="50%" textAnchor="middle" stroke="#fff" strokeWidth="1px" dy=".3em">{state.invincibilityCooldownTimeLeft}s</text>
+            <text x="50%" y="50%" textAnchor="middle" stroke="#fff" strokeWidth="1px" dy=".3em">{state.invisibilityCooldownTimeLeft}s</text>
           </svg>
         </div>
       )}
@@ -48,4 +48,4 @@ const InvincibilityTimer = () => {
   );
 };
 
-export default InvincibilityTimer;
+export default InvisibilityTimer;

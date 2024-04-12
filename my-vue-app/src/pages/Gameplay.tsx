@@ -7,7 +7,7 @@ import {Enemy1} from '../components/Enemy';
 import {Enemy2} from '../components/Enemy';
 import { useNavigate } from 'react-router-dom';
 import { playerMovement } from '../components/Player';
-import InvincibilityTimer from '../components/InvicibilityTimer';
+import InvincibilityTimer from '../components/InvisibilityTimer';
 import AudioPlayer from '../components/AudioPlayer';
 
 import BigShotTimer from '../components/BigShotTimer';

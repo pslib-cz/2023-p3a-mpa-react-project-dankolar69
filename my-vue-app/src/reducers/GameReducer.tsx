@@ -48,8 +48,8 @@ type Upgrade = {
 export const upgrades: Upgrade[] = [
   { name: 'Extra life', price: 10, owned: false},
   { name: 'Fire rate', price: 15, owned: false},
-  {name: 'Invincibility', price: 20, owned: false},
   {name: 'Big Shot', price: 25, owned: false},
+  {name: 'Invisibility', price: 30, owned: false},
   
 
 ];
@@ -89,9 +89,9 @@ export type GameState = {
 
   //ability
   isInvincible: boolean;
-  invincibilityCooldown: boolean;
-  invincibilityTimeLeft: number;
-  invincibilityCooldownTimeLeft: number;
+  invisibilityCooldown: boolean;
+  invisibilityTimeLeft: number;
+  invisibilityCooldownTimeLeft: number;
 
   bigShotCooldown: boolean;
   bigShotCooldownTimeLeft: number,
@@ -124,10 +124,10 @@ export type GameAction =
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
 
   // Ability
-  | { type: 'ACTIVATE_INVINCIBILITY'; payload: { duration: number; cooldown: number; } }
-  | { type: 'RESET_INVINCIBILITY' }
-  | {type: 'RESET_INVINCIBILITY_COOLDOWN'}
-  | {type: 'DECREMENT_INVINCIBILITY_TIMER'; payload: { timeLeft: number; }}
+  | { type: 'ACTIVATE_INVISIBILITY'; payload: { duration: number; cooldown: number; } }
+  | { type: 'RESET_INVISIBILITY' }
+  | {type: 'RESET_INVISIBILITY_COOLDOWN'}
+  | {type: 'DECREMENT_INVISIBILITY_TIMER'; payload: { timeLeft: number; }}
   | {type: 'DECREMENT_COOLDOWN_TIMER'; payload: { timeLeft: number; }}
   | {type: 'ACTIVATE_BIG_SHOT' ; payload: { cooldown: number; }}
     | {type: 'RESET_BIG_SHOT_COOLDOWN'}
@@ -153,9 +153,9 @@ export type GameAction =
 
     //ability
     isInvincible: false,
-    invincibilityCooldown: false,
-    invincibilityTimeLeft: 10,
-    invincibilityCooldownTimeLeft: 30,
+    invisibilityCooldown: false,
+    invisibilityTimeLeft: 10,
+    invisibilityCooldownTimeLeft: 30,
     bigShotCooldown: false,
     
     bigShotCooldownTimeLeft: 30,
@@ -281,43 +281,43 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           };
            
           // aktivace neviditelnosti
-          case 'ACTIVATE_INVINCIBILITY':
-            if (!state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned)) {
+          case 'ACTIVATE_INVISIBILITY':
+            if (!state.invisibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invisibility' && upgrade.owned)) {
               return {
                 ...state,
                 isInvincible: true,
-                invincibilityCooldown: true,
-                invincibilityTimeLeft: action.payload.duration, 
-                invincibilityCooldownTimeLeft: action.payload.cooldown,
+                invisibilityCooldown: true,
+                invisibilityTimeLeft: action.payload.duration, 
+                invisibilityCooldownTimeLeft: action.payload.cooldown,
               };
             }
             return state;
           
           //resetování neviditelnosti
-          case 'RESET_INVINCIBILITY':
+          case 'RESET_INVISIBILITY':
             return {
               ...state,
               isInvincible: false,
             };
           
           //resetování cooldownu neviditelnosti
-          case 'RESET_INVINCIBILITY_COOLDOWN':
+          case 'RESET_INVISIBILITY_COOLDOWN':
             return {
               ...state,
-              invincibilityCooldown: false,
+              invisibilityCooldown: false,
             };
           //odčítání času neviditelnosti
-            case 'DECREMENT_INVINCIBILITY_TIMER':
-              console.log('DECREMENT_INVINCIBILITY_TIMER payload:', action.payload);
+            case 'DECREMENT_INVISIBILITY_TIMER':
+              console.log('DECREMENT_INVISIBILITY_TIMER payload:', action.payload);
               return {
                 ...state,
-                invincibilityTimeLeft: action.payload.timeLeft,
+                invisibilityTimeLeft: action.payload.timeLeft,
               };
             //odčítání času cooldownu neviditelnosti
             case 'DECREMENT_COOLDOWN_TIMER':
               return {
                 ...state,
-                invincibilityCooldownTimeLeft: action.payload.timeLeft,
+                invisibilityCooldownTimeLeft: action.payload.timeLeft,
               };
 
               //aktivace Big Shot

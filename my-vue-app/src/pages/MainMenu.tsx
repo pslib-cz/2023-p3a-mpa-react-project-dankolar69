@@ -10,17 +10,17 @@ import { Link } from "react-router-dom";
             <h1 className="title">Space Shooter</h1>
             <Link to="/gameplay" className="link"> 
                 <button className="button">
-                    <a>Start Game</a>
+                    Start Game
                 </button>
                 
             </Link>
             <Link to="/shop" className="link">
                 <button className="button">
-                    <a>Shop</a>
+                    Shop
                 </button>
             </Link>
             <button className="button">
-                    <a>Quit</a>
+                    Quit
             </button>
         </div>
     );

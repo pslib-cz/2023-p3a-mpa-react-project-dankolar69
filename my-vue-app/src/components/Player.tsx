@@ -24,7 +24,7 @@ export function playerMovement(): void {
   if (fireRateUpgrade) {
     bulletCooldown = 200;
   }
-  const invincibilityTimerRef = useRef<number | null>(null);
+  const invisibilityTimerRef = useRef<number | null>(null);
   const bigShotCooldownTimerRef = useRef<number | null>(null);
 
 
@@ -54,30 +54,30 @@ export function playerMovement(): void {
         break;
 
         case 'KeyQ':
-            if (!state.invincibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invincibility' && upgrade.owned)) {
-              dispatch({ type: 'ACTIVATE_INVINCIBILITY', payload: { duration: 10, cooldown: 30 } });
+            if (!state.invisibilityCooldown && state.upgrades.find(upgrade => upgrade.name === 'Invisibility' && upgrade.owned)) {
+              dispatch({ type: 'ACTIVATE_INVISIBILITY', payload: { duration: 10, cooldown: 30 } });
 
-              if (!invincibilityTimerRef.current) {
-                let invincibilityDuration = 10;
-                invincibilityTimerRef.current = setInterval(() => {
-                  invincibilityDuration -= 1;
-                  dispatch({ type: 'DECREMENT_INVINCIBILITY_TIMER', payload: { timeLeft: invincibilityDuration } });
+              if (!invisibilityTimerRef.current) {
+                let invisibilityDuration = 10;
+                invisibilityTimerRef.current = setInterval(() => {
+                  invisibilityDuration -= 1;
+                  dispatch({ type: 'DECREMENT_INVISIBILITY_TIMER', payload: { timeLeft: invisibilityDuration } });
 
-                  if (invincibilityDuration <= 0) {
-                    clearInterval(invincibilityTimerRef.current!);
-                    invincibilityTimerRef.current = null;
-                    dispatch({ type: 'RESET_INVINCIBILITY' });
+                  if (invisibilityDuration <= 0) {
+                    clearInterval(invisibilityTimerRef.current!);
+                    invisibilityTimerRef.current = null;
+                    dispatch({ type: 'RESET_INVISIBILITY' });
 
                     // Start cooldown timer
                     let cooldownDuration = 30;
-                    invincibilityTimerRef.current = setInterval(() => {
+                    invisibilityTimerRef.current = setInterval(() => {
                       cooldownDuration -= 1;
                       dispatch({ type: 'DECREMENT_COOLDOWN_TIMER', payload: { timeLeft: cooldownDuration } });
 
                       if (cooldownDuration <= 0) {
-                        clearInterval(invincibilityTimerRef.current!);
-                        invincibilityTimerRef.current = null;
-                        dispatch({ type: 'RESET_INVINCIBILITY_COOLDOWN' });
+                        clearInterval(invisibilityTimerRef.current!);
+                        invisibilityTimerRef.current = null;
+                        dispatch({ type: 'RESET_INVISIBILITY_COOLDOWN' });
                       }
                     }, 1000);
                   }
@@ -147,8 +147,8 @@ export function playerMovement(): void {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      if (invincibilityTimerRef.current) {
-        clearInterval(invincibilityTimerRef.current);
+      if (invisibilityTimerRef.current) {
+        clearInterval(invisibilityTimerRef.current);
       }
       if (bigShotCooldownTimerRef.current) {
         clearInterval(bigShotCooldownTimerRef.current);
