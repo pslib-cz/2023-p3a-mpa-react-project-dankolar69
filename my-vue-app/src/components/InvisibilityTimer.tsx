@@ -2,8 +2,13 @@ import React from "react";
 import { useContext } from "react";
 import { GameContext } from "../providers/ContextProvider";
 
+type InvisibilityTimerProps = {
+  timeLeft: number;
+  invisibilityCooldown: number;
+};
 const InvisibilityTimer = () => {
   const { state } = useContext(GameContext);
+
 
   
   const calculateProgress = (timeLeft: number, maxTime:number) => {

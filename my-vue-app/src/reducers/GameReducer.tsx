@@ -521,7 +521,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             // Pohyb bosse + útok
             if (state.bossPosition ) {
               let { x, y, direction, isCharging, originalY, hasCollided } = state.bossPosition;
-              
+              console.log("Invisibility", state.isInvincible);
 
               // Zpracování "výpadu" dolů
               if (isCharging) {
@@ -531,8 +531,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   isCharging = false;
                   ;
                 }
-                if (!state.isInvincible && !hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight,-50, -120)) {
+                if (!state.isInvincible && !hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight, 0, 0)) {
                   newLives -= 1;
+                  console.log('Player hit by boss');
+                  
                   hasCollided = true;
                 }
                 

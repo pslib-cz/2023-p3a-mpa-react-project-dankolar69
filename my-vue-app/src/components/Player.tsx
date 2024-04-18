@@ -14,7 +14,7 @@ type PlayerProps = {
 // Funkce pro pohyb hráče pomocí klávesnice
 export function playerMovement(): void {
   const { state, dispatch } = useContext(GameContext);
-
+  
   // omezení střelby
   const lastBulletTime = useRef(0);
   let bulletCooldown = 500; 

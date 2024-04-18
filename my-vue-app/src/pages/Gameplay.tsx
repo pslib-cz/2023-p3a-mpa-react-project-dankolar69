@@ -77,7 +77,7 @@ const Gameplay = () => {
       navigate('/dead');
     }
     // Přechod na boss fight
-    if (state.score >= 10) {
+    if (state.score >= 3) {
       state.enemyBullets = [];
       navigate('/boss');
     }
@@ -91,7 +91,7 @@ const Gameplay = () => {
       <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
       <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
       <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
-      <InvincibilityTimer />
+      <InvincibilityTimer/>
       <BigShotTimer />
       <AudioPlayer  />
 
