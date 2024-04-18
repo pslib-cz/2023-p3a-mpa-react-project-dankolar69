@@ -27,7 +27,7 @@ const DeadScreen: React.FC = () => {
         scores.push(newScore);
         scores.sort((a, b) => b.score - a.score);
         localStorage.setItem('gameScores', JSON.stringify(scores));
-        navigate('/menu');
+        navigate('/');
     };
 
     
