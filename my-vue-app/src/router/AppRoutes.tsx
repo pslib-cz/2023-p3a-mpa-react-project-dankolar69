@@ -8,6 +8,7 @@ import Victory from '../pages/Victory';
 import BossFight from '../pages/BossFight';
 import DeadScreen from '../pages/DeadScreen';
 import Shop from '../pages/Shop';
+import Ranking from '../pages/Ranking';
 
 
 
@@ -22,7 +23,8 @@ const AppRoutes: React.FC = () => {
         <Route path='/victory' element={<Victory />} />
         <Route path='/boss' element={<BossFight />} />
         <Route path='/dead' element={<DeadScreen />} />
-        <Route path='shop' element={<Shop />} />
+        <Route path='/shop' element={<Shop />} />
+        <Route path='/ranking' element={<Ranking />} />
       </Routes>
     </Router>
   );

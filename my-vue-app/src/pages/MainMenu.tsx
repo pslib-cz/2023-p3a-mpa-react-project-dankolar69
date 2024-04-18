@@ -14,14 +14,17 @@ import { Link } from "react-router-dom";
                 </button>
                 
             </Link>
+            <Link to="/ranking" className="link">
+                <button className="button">
+                    Ranking
+                </button>
+            </Link>
             <Link to="/shop" className="link">
                 <button className="button">
                     Shop
                 </button>
             </Link>
-            <button className="button">
-                    Quit
-            </button>
+            
         </div>
     );
 };
