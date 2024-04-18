@@ -21,8 +21,7 @@ const Gameplay = () => {
   
   const navigate = useNavigate();
 
-  // Pohyb hráče pomocí klávesnice
-  playerMovement();
+ 
 
 
   // práce s logikou z reduceru

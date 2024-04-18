@@ -147,12 +147,12 @@ export function playerMovement(): void {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      if (invisibilityTimerRef.current) {
+      /*if (invisibilityTimerRef.current) {
         clearInterval(invisibilityTimerRef.current);
       }
       if (bigShotCooldownTimerRef.current) {
         clearInterval(bigShotCooldownTimerRef.current);
-      }
+      }*/
     };
   }, [dispatch]);
 }
@@ -173,7 +173,7 @@ function getFlameImageByMovement(activeDirections: { [key: string]: boolean }) {
 
 const Player: React.FC<PlayerProps> = ({ position }) => {
   const { state } = useContext(GameContext);
-  
+  playerMovement();
   const flameImage = getFlameImageByMovement(state.activeDirections);
 
 return (
