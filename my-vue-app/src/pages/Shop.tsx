@@ -1,5 +1,5 @@
 
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 import '../styles/Shop.css';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,14 @@ import { Link } from 'react-router-dom';
 const Shop = () => {
     const { state, dispatch } = useContext(GameContext);
     
+
+    useEffect(() => {
+        // Uložení upgradů do localStorage
+        localStorage.setItem('upgrades', JSON.stringify(state.upgrades));
+        localStorage.setItem('currency', JSON.stringify(state.currency));
+    }, [state.upgrades, state.currency]);
+
+
     console.log('Shop state:', state);
     const handleBuyUpgrade = (upgradeIndex: number) => {
         const selectedUpgrade = state.upgrades[upgradeIndex];

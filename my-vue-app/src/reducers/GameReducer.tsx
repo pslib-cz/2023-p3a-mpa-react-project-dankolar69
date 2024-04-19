@@ -162,8 +162,8 @@ export type GameAction =
     // pro budoucí rozšíření
     //currentLevel: 1,
     //unlockedLevels: [1],
-    upgrades: upgrades,
-    currency: 50,
+    upgrades: JSON.parse(localStorage.getItem('upgrades') || JSON.stringify(upgrades)),
+    currency: JSON.parse(localStorage.getItem('currency') as string) || 50
     
 
   };
