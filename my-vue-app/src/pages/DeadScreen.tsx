@@ -27,7 +27,7 @@ const DeadScreen: React.FC = () => {
         scores.push(newScore);
         scores.sort((a, b) => b.score - a.score);
         localStorage.setItem('gameScores', JSON.stringify(scores));
-        navigate('/');
+        
     };
 
     
@@ -48,9 +48,9 @@ const DeadScreen: React.FC = () => {
                     placeholder="Enter your nickname"
                     required
                 />
-                <button type="submit">Submit Score</button>
+                <button type="submit" onClick={handleRestart}>Submit Score</button>
             </form>
-              <button onClick={handleRestart}>Restart</button>
+              
             </div>
         </div>
           );
