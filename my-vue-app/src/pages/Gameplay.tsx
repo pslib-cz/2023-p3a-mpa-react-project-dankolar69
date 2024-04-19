@@ -76,7 +76,7 @@ const Gameplay = () => {
       navigate('/dead');
     }
     // Přechod na boss fight
-    if (state.score >= 3) {
+    if (state.score == 3) {
       state.enemyBullets = [];
       navigate('/boss');
     }

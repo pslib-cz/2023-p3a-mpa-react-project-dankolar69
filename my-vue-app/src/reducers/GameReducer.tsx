@@ -92,7 +92,6 @@ export type GameState = {
   invisibilityCooldown: boolean;
   invisibilityTimeLeft: number;
   invisibilityCooldownTimeLeft: number;
-
   bigShotCooldown: boolean;
   bigShotCooldownTimeLeft: number,
 
@@ -122,7 +121,7 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' | 'all' } }
-
+  | { type: 'PREPARE_FOR_CONTINUED_GAMEPLAY' }
   // Ability
   | { type: 'ACTIVATE_INVISIBILITY'; payload: { duration: number; cooldown: number; } }
   | { type: 'RESET_INVISIBILITY' }
@@ -367,7 +366,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return { ...state, megaBullets: [...state.megaBullets, newMegaBullet] };
       
   
-          //aktualizace stavu hry
+          //aktualizace hlavního stavu hry
           case 'UPDATE_GAMEPLAY_STATE': {
             
 
@@ -570,6 +569,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             if(state.bossLives <= 0) {
               state.bossPhase = 2;
               isCharging = false;
+              state.score+3;
               newBossLives = 3;
               state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
             }
@@ -610,7 +610,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               });
               if(state.bossLives <= 0) {
                 state.bossPhase = 3;
-                
+                state.score+3;
                 newBossLives = 10;
                 state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
               }
@@ -825,6 +825,16 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           
           return { ...state, gameOver: true };
         
+          //logika pro pokračování ve hře po bossovi
+          case 'PREPARE_FOR_CONTINUED_GAMEPLAY':
+            return {
+                ...state,
+                bossLives: initialState.bossLives, 
+                enemies: [],
+                enemyBullets: [], 
+                asteroids: [],
+               
+            };
         case 'RESET_GAME':
           const initialStateWithUpgrades = {
             ...initialState,

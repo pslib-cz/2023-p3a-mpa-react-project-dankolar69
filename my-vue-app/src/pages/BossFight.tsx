@@ -51,20 +51,22 @@ const BossFight: React.FC = () => {
       }
       
     }
-    // Nastavení intervalu pro pravidelnou aktualizaci
-    const intervalId = setInterval(moveBoss, 1000); // Aktualizuje pozici bosse každou sekundu
+   
+    const intervalId = setInterval(moveBoss, 1000);
   
-    // Cleanup funkce pro odstranění intervalu při odmountování komponenty
+  
     return () => clearInterval(intervalId);
   }, [dispatch, state.bossPhase, state.bossPosition.isCharging]); 
-  // smrt hráče nebo výhra
+
+  // smrt hráče nebo pokračování do další fáze hry
   useEffect(() => {
     if (state.lives <= 0) {
       navigate('/dead');
-    }
-    if (state.bossLives <= 0 && state.bossPhase === 3) {
-      navigate('/victory');
-    }
+  } else if (state.bossLives <= 0 && state.bossPhase === 3) {
+      state.score + 3;
+      dispatch({ type: 'PREPARE_FOR_CONTINUED_GAMEPLAY' }); 
+      navigate('/gameplay'); 
+  }
     
   });
 
