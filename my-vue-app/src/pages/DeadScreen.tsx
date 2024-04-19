@@ -22,12 +22,12 @@ const DeadScreen: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const newScore = { nickname, score: state.score };
+        const newScore: Score = { nickname, score: state.score };
         const scores:Score[] = JSON.parse(localStorage.getItem('gameScores') || '[]');
         scores.push(newScore);
         scores.sort((a, b) => b.score - a.score);
         localStorage.setItem('gameScores', JSON.stringify(scores));
-        
+        handleRestart();
     };
 
     
@@ -48,7 +48,7 @@ const DeadScreen: React.FC = () => {
                     placeholder="Enter your nickname"
                     required
                 />
-                <button type="submit" onClick={handleRestart}>Submit Score</button>
+                <button type="submit">Submit Score</button>
             </form>
               
             </div>
