@@ -429,7 +429,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 }
 
                 
-                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight, 50, 0));
+                    const hitEnemyIndex = updatedEnemies.findIndex(enemy => detectCollision(bullet, enemy, bulletWidth, bulletHeight, enemyWidth, enemyHeight, 50, 30));
                     if (hitEnemyIndex !== -1) {
                     updatedEnemies.splice(hitEnemyIndex, 1); 
                     state.score += 1; 
@@ -525,13 +525,13 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
               // Zpracování "výpadu" dolů
               if (isCharging) {
-                y += 70; // rychlost výpadu
+                y += 50; // rychlost výpadu
                 if (y >= window.innerHeight + 20) { // Dosáhnutí spodní části obrazovky
                   y = originalY ?? 0; 
                   isCharging = false;
                   ;
                 }
-                if (!state.isInvincible && !hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight, 0, 0)) {
+                if (!state.isInvincible && !hasCollided && detectCollision(state.playerPosition, state.bossPosition, playerWidth, playerHeight, bossWidth, bossHeight, 20, -50)) {
                   newLives -= 1;
                   console.log('Player hit by boss');
                   
