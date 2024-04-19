@@ -178,7 +178,7 @@ const Player: React.FC<PlayerProps> = ({ position }) => {
 
 return (
 
-  <div>
+  <div className='player'>
     <img
     src={playerImage}
     alt="Player"

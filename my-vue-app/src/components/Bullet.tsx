@@ -8,7 +8,7 @@ type BulletProps = {
 };
 
 const MegaBullet: React.FC<BulletProps> = ({ position }) => ( 
-  <div style={{
+  <div className='megaBullet' style={{
     position: 'absolute',
     top: position.y,
     left: position.x,
@@ -28,7 +28,7 @@ const MegaBullet: React.FC<BulletProps> = ({ position }) => (
 );
 const Bullet: React.FC<BulletProps> = ({ position }) => (
   
-  <div style={{
+  <div className='bullet' style={{
     position: 'absolute',
     top: position.y,
     left: position.x ,

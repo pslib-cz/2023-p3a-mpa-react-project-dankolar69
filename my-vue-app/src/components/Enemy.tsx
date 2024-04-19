@@ -18,7 +18,7 @@ type EnemyProps = {
   export const Enemy1: React.FC<EnemyProps> = ({ position}) => (
     
     
-    <div style={{
+    <div className="enemy1" style={{
       position: 'absolute',
       top: position.y, 
       left: position.x , 
@@ -41,7 +41,7 @@ type EnemyProps = {
 
   export const Enemy2: React.FC<EnemyProps> = ({ position}) => (
       
-      <div style={{
+      <div className="enemy2" style={{
         position: 'absolute',
         top: position.y , 
         left: position.x, 
@@ -62,7 +62,7 @@ type EnemyProps = {
     );
   
     export const Enemy3: React.FC<EnemyProps> = ({ position }) => (
-      <div  style={{
+      <div className="enemy3" style={{
         position: 'absolute',
         top: position.y - 80,
         left: position.x - 50,
