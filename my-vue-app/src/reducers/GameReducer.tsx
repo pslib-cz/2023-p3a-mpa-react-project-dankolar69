@@ -121,7 +121,7 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_DOWN' }
   | { type: 'MOVE_PLAYER_LEFT' }
   | { type: 'MOVE_PLAYER_RIGHT' }
-  | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' } }
+  | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' | 'all' } }
 
   // Ability
   | { type: 'ACTIVATE_INVISIBILITY'; payload: { duration: number; cooldown: number; } }
@@ -202,11 +202,17 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               activeDirections: { ...state.activeDirections, right: true }
             };
           case 'STOP_MOVE_PLAYER':
-            
+            if (action.payload.direction === 'all') {
+              return {
+                ...state,
+                activeDirections: { up: false, down: false, left: false, right: false }
+              };
+            } else {
             return {
               ...state,
               activeDirections: { ...state.activeDirections, [action.payload.direction]: false }
             };
+          };
       // vytvoření asteroidu
         case 'ADD_ASTEROID':
           const newAsteroid = {

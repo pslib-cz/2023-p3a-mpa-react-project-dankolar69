@@ -2,18 +2,22 @@ import React from 'react';
 import playerImage from '../assets/images/playerImage.png';
 import { useContext, useEffect, useRef } from 'react';
 import { GameContext } from '../providers/ContextProvider';
-
+import { useCallback } from 'react';
 import engine2 from '../assets/images/engine2.png';
 import engine from '../assets/images/engine.png';
+import { Joystick } from 'react-joystick-component';
 
 type PlayerProps = {
   position: { x: number; y: number; };
 };
 
 
+
+
 // Funkce pro pohyb hráče pomocí klávesnice
 export function playerMovement(): void {
   const { state, dispatch } = useContext(GameContext);
+  
   
   // omezení střelby
   const lastBulletTime = useRef(0);
@@ -137,6 +141,7 @@ export function playerMovement(): void {
     dispatch({ type: 'STOP_MOVE_PLAYER', payload: { direction } });
   };
   
+  
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -172,9 +177,44 @@ function getFlameImageByMovement(activeDirections: { [key: string]: boolean }) {
 }
 
 const Player: React.FC<PlayerProps> = ({ position }) => {
-  const { state } = useContext(GameContext);
+  const { state, dispatch } = useContext(GameContext);
   playerMovement();
   const flameImage = getFlameImageByMovement(state.activeDirections);
+  
+  // Funkce pro pohyb hráče pomocí joysticku
+ 
+
+  const handleMove = useCallback((event: any) => {  // Using any temporarily
+    const x = event.x ?? 0;
+    const y = event.y ?? 0;
+
+    if (x > 0) {
+      dispatch({ type: 'MOVE_PLAYER_RIGHT' });
+    } else if (x < 0) {
+      dispatch({ type: 'MOVE_PLAYER_LEFT' });
+    }
+    if (y > 0) {
+      dispatch({ type: 'MOVE_PLAYER_UP' });
+    } else if (y < 0) {
+      dispatch({ type: 'MOVE_PLAYER_DOWN' });
+    }
+  }, [dispatch]);
+  // Funkce pro zastavení pohybu hráče pomocí joysticku
+  const handleStop = useCallback(() => {
+    dispatch({ type: 'STOP_MOVE_PLAYER', payload: { direction: 'all' } });
+}, [dispatch]);
+
+  useEffect(() => {
+
+    window.addEventListener('joystickmove', handleMove as EventListener);
+    window.addEventListener('joystickstop', handleStop);
+
+    return () => {
+        // Clean up event listeners
+        window.removeEventListener('joystickmove', handleMove as EventListener);
+        window.removeEventListener('joystickstop', handleStop);
+    };
+}, [dispatch]);
 
 return (
 
@@ -209,6 +249,7 @@ return (
         }}
       />
       )}
+      <Joystick size={100} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
   </div>
 )};
 
