@@ -617,36 +617,47 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
           // Boss fáze 3
           else if (state.bossPhase === 3) {
-            
-            
             if (state.enemies.filter(e => e.type === 'enemy3').length < 4) {
               for (let i = 0; i < 3; i++) {
                 state.enemies.push({
                   x: Math.random() * window.innerWidth,
-                  y: Math.random() * (window.innerHeight / 4), // Startují z horní čtvrtiny obrazovky
+                  y: Math.random() * (window.innerHeight / 4), // Start in the top quarter of the screen
                   id: uuidv4(),
                   type: 'enemy3',
                   directionX: Math.random() < 0.5 ? 1 : -1, 
-                  directionY: Math.random() < 0.5 ? 1 : -1, 
+                  directionY: Math.random() < 0.5 ? 1 : -1,
                   lastShotTime: 0,
                 });
               }
             }
             const currentTime = Date.now();
-
-            // Logika pro 'Enemy3' střelbu
+          
+            // Logic for 'Enemy3' shooting
             state.enemies = state.enemies.map(enemy => {
               if (enemy.type === 'enemy3') {
-                
-                const movementSpeed = 7; 
-            
-                
-                const directionX = (state.playerPosition.x > enemy.x ? 1 : -1) * Math.random();
-                const directionY = (state.playerPosition.y > enemy.y ? 1 : -1) * Math.random();
-            
-                // Omezení střelby
+                const movementSpeed = 7;
+                const steps = 10; 
+                let newX = enemy.x;
+                let newY = enemy.y;
+          
+                for (let i = 0; i < steps; i++) {
+                  newX += (enemy.directionX??0 * movementSpeed) / steps;
+                  newY += (enemy.directionY??0 * movementSpeed) / steps;
+          
+                  // Check for collision after each small step
+                  if (detectCollision({x: newX, y: newY, id: enemy.id}, state.playerPosition, enemyWidth, enemyHeight, playerWidth, playerHeight)) {
+                    // Handle collision (e.g., reduce lives, remove enemy, etc.)
+                    console.log('Collision detected with player');
+                    
+                    break;
+                  }
+                }
+          
+                enemy.x = newX; // Update the position with the last valid position before collision
+                enemy.y = newY;
+          
+                // Shooting logic
                 if (!enemy.lastShotTime || currentTime - enemy.lastShotTime > 3000) {
-                  
                   const angle = Math.atan2(state.playerPosition.y - enemy.y, state.playerPosition.x - enemy.x);
                   const bulletSpeed = 5;
                   state.enemyBullets.push({
@@ -657,21 +668,14 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     directionY: Math.sin(angle) * bulletSpeed,
                     type: 'enemy3',
                   });
-            
-                  enemy.lastShotTime = currentTime; 
-                }
-                
-                // Aktualizace pozice nepřítele
-                return {
-                  ...enemy,
-                  x: enemy.x + directionX * movementSpeed,
-                  y: enemy.y + directionY * movementSpeed,
-                };
-              } else {
-                return enemy; 
-              }
-            });
           
+                  enemy.lastShotTime = currentTime; // Update the last shot time
+                }
+              } else {
+                return enemy; // Return non-enemy3 types unchanged
+              }
+              return enemy; // Return the potentially updated enemy3
+            });
           }
           
           

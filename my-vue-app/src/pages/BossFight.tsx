@@ -75,6 +75,7 @@ const BossFight: React.FC = () => {
     return (
         <div className="gameplay-container">
             <h1 style={{ color: 'white' }}>Boss Fight</h1>
+            <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
             <h2 style={{ color: 'white' }}>Boss Phase: {state.bossPhase}</h2>
             <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
             <InvincibilityTimer />
