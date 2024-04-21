@@ -81,7 +81,7 @@ const Gameplay = () => {
    
   
     return () => clearInterval(addEntitiesInterval);
-  }, [dispatch]);
+  }, [dispatch, state.score]);
 
   useEffect(() => {
     state.blackHoles.forEach(blackHole => {
