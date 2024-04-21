@@ -33,24 +33,37 @@ const Gameplay = () => {
       dispatch({ type: 'UPDATE_PLAYER_MOVEMENT'});
     }, 100); 
 
-    return () => clearInterval(interval);
-  }, [dispatch]);
-
-  // Přidání nepřátel
-  useEffect(() => {
+    
+   
     let addEntitiesInterval;
     if (state.score > 15) {
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_ENEMY' });
       }, 1000); 
+      
     } else {
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_ENEMY' });
       }, 2000); 
     }
+    const addEntitiesInterval2 = setInterval(() => {
+      dispatch({ type: 'ADD_ENEMY_BULLET' });
+      dispatch({ type: 'ADD_ASTEROID' });
+    }, 1000);
+
+    
+     
   
-    return () => clearInterval(addEntitiesInterval);
+    return () => {
+      clearInterval(addEntitiesInterval) 
+      clearInterval(interval)
+      clearInterval(addEntitiesInterval2)
+      };
+
+    
   }, [dispatch, state.score]);
+
+  
 
   // Přidání asteroidů
   useEffect(() => {
@@ -59,7 +72,8 @@ const Gameplay = () => {
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_BLACKHOLE' });
       }, 5000); 
-    } else {
+    } 
+    else {
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_ASTEROID' });
       }, 1000); 
@@ -77,17 +91,6 @@ const Gameplay = () => {
     });
   }, []); 
   
-  // Přidání nepřátelských střel
-  useEffect(() => {
-    const addEntitiesInterval = setInterval(() => {
-      
-      dispatch({ type: 'ADD_ENEMY_BULLET'});
-      
-    }, 1000); 
-  
-    return () => clearInterval(addEntitiesInterval);
-  }, [dispatch]);
-
   
   useEffect(() => {
     // smrt hráče
@@ -99,6 +102,7 @@ const Gameplay = () => {
     if (state.score == 3) {
       dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
       dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
+      dispatch({type: 'RESET_INVISIBILITY'})
       state.enemyBullets = [];
       navigate('/boss');
     }

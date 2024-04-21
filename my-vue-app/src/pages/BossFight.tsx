@@ -67,6 +67,7 @@ const BossFight: React.FC = () => {
       state.score + 3;
       dispatch({ type: 'PREPARE_FOR_CONTINUED_GAMEPLAY' }); 
       dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
+      dispatch({type: 'RESET_INVISIBILITY'})
       dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
       navigate('/gameplay'); 
   }
