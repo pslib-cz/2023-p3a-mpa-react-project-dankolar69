@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
 import { Navigate } from "react-router-dom";
+import BlackHole from "../components/BlackHole";
 
 
 
@@ -20,7 +21,7 @@ const bossWidth = 120;
 const bossHeight = 120;
 
 
-function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
+export function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {
   // lepší detekce pro enemy, které jsou posunuté
   const obj1FutureLeft = obj1.x - offsetY;
   const obj1FutureRight = obj1.x + width1 + offsetX;
@@ -75,6 +76,7 @@ type Position = {
 export type GameState = {
   playerPosition: Position;
   bossPosition: Position;
+  blackHoles: Position[];
   asteroids: Position[];
   bullets: Position[];
   enemies: Position[];
@@ -86,6 +88,7 @@ export type GameState = {
   bossLives: number;
   activeDirections: { [code: string]: boolean };
   bossPhase: number;
+  playerShrinking: boolean;
 
   //ability
   isInvincible: boolean;
@@ -108,6 +111,7 @@ export type GameAction =
   | { type: 'ADD_BULLET' }
   | { type: 'ADD_BOSS' }
   | { type: 'ADD_ENEMY' }
+  | {type: 'ADD_BLACKHOLE'}
   | { type: 'UPDATE_GAMEPLAY_STATE' }
   | { type: 'UPDATE_BOSSFIGHT_STATE' }
   | { type: 'UPDATE_PLAYER_MOVEMENT' }
@@ -122,6 +126,7 @@ export type GameAction =
   | { type: 'MOVE_PLAYER_RIGHT' }
   | { type: 'STOP_MOVE_PLAYER'; payload: { direction: 'up' | 'down' | 'left' | 'right' | 'all' } }
   | { type: 'PREPARE_FOR_CONTINUED_GAMEPLAY' }
+  | { type: 'TRIGGER_BLACK_HOLE_EFFECT' }
   // Ability
   | { type: 'ACTIVATE_INVISIBILITY'; payload: { duration: number; cooldown: number; } }
   | { type: 'RESET_INVISIBILITY' }
@@ -138,6 +143,7 @@ export type GameAction =
   export const initialState: GameState = {
     playerPosition: { x: window.innerWidth /2, y: window.innerHeight / 2, id: uuidv4() },
     bossPosition: {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() },
+    blackHoles: [],
     asteroids: [],
     bullets: [],
     enemies: [],
@@ -149,6 +155,7 @@ export type GameAction =
     bossLives: 3,
     activeDirections: {},
     bossPhase: 1,
+    playerShrinking: false,
 
     //ability
     isInvincible: false,
@@ -255,7 +262,18 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return { ...state, enemyBullets: [...state.enemyBullets, ...newEnemyBullets] };
               }
               return state;
-
+        // přidání černé díry
+        case 'ADD_BLACKHOLE':
+                const newBlackHole = {
+                    x: Math.random() * window.innerWidth, 
+                    y: 0, 
+                    id: uuidv4(),
+                    size: 60, 
+                };
+                return {
+                    ...state,
+                    blackHoles: [...state.blackHoles, newBlackHole]
+                };
         // koupení upgradu + logika
         case 'PURCHASE_UPGRADE':
 
@@ -488,6 +506,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return { ...bullet, y: newY };
             }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
             
+
+            const updatedBlackHoles = state.blackHoles.map(blackHole => {
+              
+              return { ...blackHole, y: blackHole.y + 10 }; // Move black hole down
+
+          }).filter((blackHole): blackHole is Position => blackHole !== null && blackHole.y < window.innerHeight);
             if (newLives <= 0 && !gameOver) {
               gameOver = true;
             }
@@ -507,6 +531,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 enemies: updatedEnemies,
                 gameOver: gameOver,
                 megaBullets: updatedMegaBullets,
+                blackHoles: updatedBlackHoles,
                 
                 
                 
@@ -821,6 +846,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             }
             return state;
         }
+        case 'TRIGGER_BLACK_HOLE_EFFECT':
+            return {
+                ...state,
+                playerShrinking: true,  
+                gameOver: true  
+            };
         case 'GAME_OVER':
           
           return { ...state, gameOver: true };

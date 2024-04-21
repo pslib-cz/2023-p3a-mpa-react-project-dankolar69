@@ -9,8 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { playerMovement } from '../components/Player';
 import InvincibilityTimer from '../components/InvisibilityTimer';
 import AudioPlayer from '../components/AudioPlayer';
-
+import BlackHole from '../components/BlackHole';
 import BigShotTimer from '../components/BigShotTimer';
+import { detectCollision } from '../reducers/GameReducer';
 
 
 
@@ -37,26 +38,45 @@ const Gameplay = () => {
 
   // Přidání nepřátel
   useEffect(() => {
-    const addEntitiesInterval = setInterval(() => {
-      
-      dispatch({ type: 'ADD_ENEMY' });
-      
-    }, 2000); 
+    let addEntitiesInterval;
+    if (state.score > 15) {
+      addEntitiesInterval = setInterval(() => {
+        dispatch({ type: 'ADD_ENEMY' });
+      }, 1000); 
+    } else {
+      addEntitiesInterval = setInterval(() => {
+        dispatch({ type: 'ADD_ENEMY' });
+      }, 2000); 
+    }
   
     return () => clearInterval(addEntitiesInterval);
-  }, [dispatch]);
+  }, [dispatch, state.score]);
 
   // Přidání asteroidů
   useEffect(() => {
-    const addEntitiesInterval = setInterval(() => {
-      dispatch({ type: 'ADD_ASTEROID' });
-      
-      
-    }, 1000); 
+    let addEntitiesInterval;
+    if (state.score > 15) {
+      addEntitiesInterval = setInterval(() => {
+        dispatch({ type: 'ADD_BLACKHOLE' });
+      }, 5000); 
+    } else {
+      addEntitiesInterval = setInterval(() => {
+        dispatch({ type: 'ADD_ASTEROID' });
+      }, 1000); 
+    }
+   
   
     return () => clearInterval(addEntitiesInterval);
   }, [dispatch]);
 
+  useEffect(() => {
+    state.blackHoles.forEach(blackHole => {
+      if (detectCollision(state.playerPosition, blackHole, 50, 50, 60, 60)) {
+          dispatch({ type: 'TRIGGER_BLACK_HOLE_EFFECT' });
+      }
+    });
+  }, []); 
+  
   // Přidání nepřátelských střel
   useEffect(() => {
     const addEntitiesInterval = setInterval(() => {
@@ -99,6 +119,9 @@ const Gameplay = () => {
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
         <Asteroid key={asteroid.id} position={asteroid} image={asteroid.image} />
+      ))}
+      {state.blackHoles.map(blackHole => (
+        <BlackHole key={blackHole.id} position={blackHole} size={60} />
       ))}
       {state.bullets.map(bullet =>  
   

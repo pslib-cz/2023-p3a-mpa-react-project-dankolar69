@@ -6,6 +6,7 @@ import { useCallback } from 'react';
 import engine2 from '../assets/images/engine2.png';
 import engine from '../assets/images/engine.png';
 import { Joystick } from 'react-joystick-component';
+import '../styles/Main.css';
 
 type PlayerProps = {
   position: { x: number; y: number; };
@@ -228,6 +229,7 @@ return (
       left: position.x,
       height: '50px',
       width: '50px',
+      animation: state.playerShrinking ? 'rotate-and-shrink 2s forwards' : 'none',
       transition: 'top 0.2s ease-out, left 0.2s ease-out', 
         transform: 'translateZ(0)',
         opacity: state.isInvincible ? 0.5 : 1,
