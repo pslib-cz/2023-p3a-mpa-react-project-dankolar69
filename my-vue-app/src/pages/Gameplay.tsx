@@ -77,6 +77,8 @@ const Gameplay = () => {
     }
     // Přechod na boss fight
     if (state.score == 3) {
+      dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
+      dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
       state.enemyBullets = [];
       navigate('/boss');
     }

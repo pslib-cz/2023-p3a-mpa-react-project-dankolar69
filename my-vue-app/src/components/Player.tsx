@@ -31,7 +31,7 @@ export function playerMovement(): void {
   const invisibilityTimerRef = useRef<number | null>(null);
   const bigShotCooldownTimerRef = useRef<number | null>(null);
 
-
+  
   const handleKeyDown = (event: KeyboardEvent) => {
     const currentTime = Date.now();
     switch(event.code) {
@@ -89,7 +89,7 @@ export function playerMovement(): void {
               }
             }
             break;
-
+            
   case 'KeyE':
     if (!state.bigShotCooldown && state.upgrades.find(upgrade => upgrade.name === 'Big Shot' && upgrade.owned)) {
       if (!bigShotCooldownTimerRef.current) {
@@ -152,12 +152,12 @@ export function playerMovement(): void {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      /*if (invisibilityTimerRef.current) {
+      if (invisibilityTimerRef.current) {
         clearInterval(invisibilityTimerRef.current);
       }
       if (bigShotCooldownTimerRef.current) {
         clearInterval(bigShotCooldownTimerRef.current);
-      }*/
+      }
     };
   }, [dispatch]);
 }

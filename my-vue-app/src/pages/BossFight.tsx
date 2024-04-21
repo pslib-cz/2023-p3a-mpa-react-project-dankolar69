@@ -61,10 +61,13 @@ const BossFight: React.FC = () => {
   // smrt hráče nebo pokračování do další fáze hry
   useEffect(() => {
     if (state.lives <= 0) {
+      
       navigate('/dead');
   } else if (state.bossLives <= 0 && state.bossPhase === 3) {
       state.score + 3;
       dispatch({ type: 'PREPARE_FOR_CONTINUED_GAMEPLAY' }); 
+      dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
+      dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
       navigate('/gameplay'); 
   }
     
