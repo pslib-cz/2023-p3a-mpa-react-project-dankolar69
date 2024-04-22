@@ -3,7 +3,7 @@ import "../styles/Gameplay.css";
 import Player from "../components/Player";
 import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
-import { playerMovement } from "../components/Player";
+
 import {MegaBullet, Bullet} from "../components/Bullet";
 import { Boss1 } from "../components/Boss";
 import { Enemy3 } from "../components/Enemy";

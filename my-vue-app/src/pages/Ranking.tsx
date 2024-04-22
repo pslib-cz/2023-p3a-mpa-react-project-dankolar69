@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { Score } from './DeadScreen';
 import '../styles/Ranking.css';
 import { Link } from 'react-router-dom';

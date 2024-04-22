@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef , useState} from 'react';
+import  { useContext, useEffect} from 'react';
 import { GameContext } from '../providers/ContextProvider'; 
 import Player from '../components/Player';
 import Asteroid from '../components/Asteroid';
@@ -6,7 +6,7 @@ import {Bullet, MegaBullet} from '../components/Bullet';
 import {Enemy1} from '../components/Enemy';
 import {Enemy2} from '../components/Enemy';
 import { useNavigate } from 'react-router-dom';
-import { playerMovement } from '../components/Player';
+
 import InvincibilityTimer from '../components/InvisibilityTimer';
 import AudioPlayer from '../components/AudioPlayer';
 import BlackHole from '../components/BlackHole';
