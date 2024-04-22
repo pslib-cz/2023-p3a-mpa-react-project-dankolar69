@@ -229,6 +229,7 @@ return (
       left: position.x,
       height: '50px',
       width: '50px',
+      zIndex: 20,
       animation: state.playerShrinking ? 'rotate-and-shrink 2s forwards' : 'none',
       transition: 'top 0.2s ease-out, left 0.2s ease-out', 
         transform: 'translateZ(0)',

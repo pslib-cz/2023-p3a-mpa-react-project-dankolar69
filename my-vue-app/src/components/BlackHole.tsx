@@ -10,6 +10,7 @@ const BlackHole: React.FC<BlackHoleProps> = ({ size, position }) => {
     return (
         <div
             style={{
+                zIndex: 10,
                 width: size,
                 height: size,
                 borderRadius: '50%',

@@ -850,7 +850,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             return {
                 ...state,
                 playerShrinking: true,  
-                gameOver: true  
+                 
             };
         case 'GAME_OVER':
           

@@ -49,6 +49,13 @@ const Gameplay = () => {
     const addEntitiesInterval2 = setInterval(() => {
       dispatch({ type: 'ADD_ENEMY_BULLET' });
       dispatch({ type: 'ADD_ASTEROID' });
+      if (state.playerShrinking) {
+    
+            dispatch({ type: 'GAME_OVER' });
+        
+
+      
+    }
     }, 1000);
 
     
@@ -61,14 +68,14 @@ const Gameplay = () => {
       };
 
     
-  }, [dispatch, state.score]);
+  }, [dispatch, state.score, state.playerShrinking]);
 
   
 
   // Přidání asteroidů
   useEffect(() => {
     let addEntitiesInterval;
-    if (state.score > 15) {
+    if (state.score > 7) {
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_BLACKHOLE' });
       }, 5000); 
@@ -85,16 +92,17 @@ const Gameplay = () => {
 
   useEffect(() => {
     state.blackHoles.forEach(blackHole => {
-      if (detectCollision(state.playerPosition, blackHole, 50, 50, 60, 60)) {
+      if (detectCollision(state.playerPosition, blackHole, 50, 50, 100, 100)) {
           dispatch({ type: 'TRIGGER_BLACK_HOLE_EFFECT' });
       }
     });
-  }, []); 
+    
+  }, [dispatch, state.blackHoles, state.playerPosition]); 
   
   
   useEffect(() => {
     // smrt hráče
-    if (state.lives <= 0) {
+    if (state.lives <= 0 || state.gameOver == true) {
       
       navigate('/dead');
     }
@@ -125,7 +133,7 @@ const Gameplay = () => {
         <Asteroid key={asteroid.id} position={asteroid} image={asteroid.image} />
       ))}
       {state.blackHoles.map(blackHole => (
-        <BlackHole key={blackHole.id} position={blackHole} size={60} />
+        <BlackHole key={blackHole.id} position={blackHole} size={100} />
       ))}
       {state.bullets.map(bullet =>  
   
