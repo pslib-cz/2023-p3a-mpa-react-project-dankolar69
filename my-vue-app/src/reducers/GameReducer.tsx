@@ -864,6 +864,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 enemies: [],
                 enemyBullets: [], 
                 asteroids: [],
+                blackHoles: [],
                
             };
         case 'RESET_GAME':

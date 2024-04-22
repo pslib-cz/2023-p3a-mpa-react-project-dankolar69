@@ -1,5 +1,5 @@
 import React from 'react';
-import blackHole from '../assets/images/blackHole.png';
+import blackHole from '../assets/images/bl.png';
 
 interface BlackHoleProps {
     size: number;
@@ -14,7 +14,7 @@ const BlackHole: React.FC<BlackHoleProps> = ({ size, position }) => {
                 width: size,
                 height: size,
                 borderRadius: '50%',
-                backgroundColor: 'black',
+                
                 position: 'absolute',
                 left: position.x,
                 top: position.y,
