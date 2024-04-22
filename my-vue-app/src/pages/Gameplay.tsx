@@ -75,7 +75,12 @@ const Gameplay = () => {
   // Přidání asteroidů
   useEffect(() => {
     let addEntitiesInterval;
-    if (state.score > 0) {
+    if(state.score > 15) {
+      addEntitiesInterval = setInterval(() => {
+        dispatch({ type: 'ADD_BLACKHOLE' });
+      }, 2000); 
+    }
+    else if (state.score > 0) {
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_BLACKHOLE' });
       }, 5000); 
