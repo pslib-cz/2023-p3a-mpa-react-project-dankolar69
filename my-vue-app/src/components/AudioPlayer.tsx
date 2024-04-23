@@ -19,7 +19,7 @@ const AudioPlayer: React.FC = () => {
 
   useEffect(() => {
     const trackMap: Record<string, string> = {
-      '/gameplay': 'src/assets/audio/song2.ogg',
+      '/gameplay': 'src/assets/audio/song2.mp3',
       '/boss': 'src/assets/audio/boss1.mp3',
     };
 
