@@ -19,8 +19,8 @@ const AudioPlayer: React.FC = () => {
 
   useEffect(() => {
     const trackMap: Record<string, string> = {
-      '/gameplay': '/src/assets/audio/song2.ogg',
-      '/boss': '/src/assets/audio/boss1.mp3',
+      '/gameplay': 'src/assets/audio/song2.ogg',
+      '/boss': 'src/assets/audio/boss1.mp3',
     };
 
     const hashPath = window.location.hash.replace(/^#/, ''); // Remove the hash
