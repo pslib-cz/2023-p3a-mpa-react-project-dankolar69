@@ -7,7 +7,7 @@ import { GameProvider } from './providers/ContextProvider.tsx'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
+  <BrowserRouter basename={"/"}>
     <GameProvider>
       <React.StrictMode>
         <App />
