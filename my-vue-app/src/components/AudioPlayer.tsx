@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gameplayS2 from '../assets/audio/song2.mp3';
+import bossS1 from '../assets/audio/boss1.mp3';
 
 const AudioPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -19,8 +21,8 @@ const AudioPlayer: React.FC = () => {
 
   useEffect(() => {
     const trackMap: Record<string, string> = {
-      '/gameplay': 'src/assets/audio/song2.mp3',
-      '/boss': 'src/assets/audio/boss1.mp3',
+      '/gameplay': gameplayS2,
+      '/boss': bossS1,
     };
 
     const hashPath = window.location.hash.replace(/^#/, ''); // Remove the hash
