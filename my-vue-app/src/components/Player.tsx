@@ -29,8 +29,8 @@ export function playerMovement(): void {
   if (fireRateUpgrade) {
     bulletCooldown = 200;
   }
-  const invisibilityTimerRef = useRef<number | null>(null);
-  const bigShotCooldownTimerRef = useRef<number | null>(null);
+  const invisibilityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const bigShotCooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   
   const handleKeyDown = (event: KeyboardEvent) => {

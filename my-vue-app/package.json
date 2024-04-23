@@ -1,6 +1,6 @@
 {
   "name": "my-vue-app",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "homepage": "https://pslib-cz.github.io/2023-p3a-mpa-react-project-dankolar69/",
