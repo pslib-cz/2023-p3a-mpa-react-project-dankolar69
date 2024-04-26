@@ -113,7 +113,7 @@ export type GameAction =
   | {type: 'ADD_BLACKHOLE'}
   | { type: 'UPDATE_GAMEPLAY_STATE' }
   | { type: 'UPDATE_BOSSFIGHT_STATE' }
-  | { type: 'UPDATE_PLAYER_MOVEMENT' }
+  | { type: 'UPDATE_PLAYER_MOVEMENT', payload?: { moveRight: boolean; moveLeft: boolean; moveUp: boolean; moveDown: boolean; } }
   | { type: 'GAME_OVER' }
   | { type: 'RESET_GAME' }
   | { type: 'ADD_ENEMY_BULLET' }
@@ -184,7 +184,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
   let gameOver = state.gameOver;
   let newLives = state.lives;
     switch (action.type) {
-
+      
         //ovládání hráče
         case 'MOVE_PLAYER_UP':
             return {
@@ -802,12 +802,26 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
         case 'UPDATE_PLAYER_MOVEMENT': {
             //pohyb hráče
-            const newPosition = { ...state.playerPosition };
+            if (action.payload) {
+              const { moveRight, moveLeft, moveUp, moveDown } = action.payload;
+              return {
+                ...state,
+                activeDirections: {
+                  right: moveRight,
+                  left: moveLeft,
+                  up: moveUp,
+                  down: moveDown
+                }
+              };
+            } else {
+              const newPosition = { ...state.playerPosition };
               if (state.activeDirections.up) newPosition.y = Math.max(newPosition.y - step, 0);
               if (state.activeDirections.down) newPosition.y = Math.min(newPosition.y + step, window.innerHeight - 50);
               if (state.activeDirections.left) newPosition.x = Math.max(newPosition.x - step, 0);
               if (state.activeDirections.right) newPosition.x = Math.min(newPosition.x + step, window.innerWidth - 50);
               return { ...state, playerPosition: newPosition };
+            };
+            
         }
         case 'MOVE_BOSS': {
             if(state.bossPhase === 2 || state.bossPhase === 3) {

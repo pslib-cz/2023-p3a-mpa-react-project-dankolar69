@@ -181,29 +181,34 @@ const Player: React.FC<PlayerProps> = ({ position }) => {
   const { state, dispatch } = useContext(GameContext);
   playerMovement();
   const flameImage = getFlameImageByMovement(state.activeDirections);
+
+  
   
   // Funkce pro pohyb hráče pomocí joysticku
  
 
-  const handleMove = useCallback((event: any) => {  // Using any temporarily
+  const handleMove = useCallback((event: any) => {
     const x = event.x ?? 0;
     const y = event.y ?? 0;
-
-    if (x > 0) {
-      dispatch({ type: 'MOVE_PLAYER_RIGHT' });
-    } else if (x < 0) {
-      dispatch({ type: 'MOVE_PLAYER_LEFT' });
-    }
-    if (y > 0) {
-      dispatch({ type: 'MOVE_PLAYER_UP' });
-    } else if (y < 0) {
-      dispatch({ type: 'MOVE_PLAYER_DOWN' });
-    }
+    
+    // Log current joystick positions to debug
+    console.log("Joystick position:", x, y);
+  
+    // Determine new movement directions based on joystick position
+    const moveRight = x > 0;
+    const moveLeft = x < 0;
+    const moveUp = y > 0;
+    const moveDown = y < 0;
+  
+    // Dispatch actions to update player direction states
+    dispatch({ type: 'UPDATE_PLAYER_MOVEMENT', payload: { moveRight, moveLeft, moveUp, moveDown } });
   }, [dispatch]);
-  // Funkce pro zastavení pohybu hráče pomocí joysticku
+  
   const handleStop = useCallback(() => {
+    console.log("Joystick released");
+    // This will reset all movement directions when the joystick is completely released
     dispatch({ type: 'STOP_MOVE_PLAYER', payload: { direction: 'all' } });
-}, [dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
 
