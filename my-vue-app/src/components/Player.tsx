@@ -8,6 +8,7 @@ import engine from '../assets/images/engine.png';
 import { Joystick } from 'react-joystick-component';
 import '../styles/Main.css';
 
+
 type PlayerProps = {
   position: { x: number; y: number; };
 };
@@ -222,6 +223,11 @@ const Player: React.FC<PlayerProps> = ({ position }) => {
     };
 }, [dispatch]);
 
+
+
+
+
+const isMobile = window.innerWidth < 768;
 return (
 
   <div className='player'>
@@ -257,7 +263,15 @@ return (
         }}
       />
       )}
-      <Joystick size={100} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
+      
+      {isMobile && (
+        
+        <div>
+          
+          <Joystick size={100} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
+          
+        </div>
+      )}
   </div>
 )};
 

@@ -1,4 +1,4 @@
-import  { useContext, useEffect} from 'react';
+import  { useContext, useEffect, useState} from 'react';
 import { GameContext } from '../providers/ContextProvider'; 
 import Player from '../components/Player';
 import Asteroid from '../components/Asteroid';
@@ -18,12 +18,20 @@ import { detectCollision } from '../reducers/GameReducer';
 
 const Gameplay = () => {
   const { state, dispatch } = useContext(GameContext);
-  
-  
   const navigate = useNavigate();
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
  
+  // Změna velikosti okna
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // práce s logikou z reduceru
   // Update hry
@@ -37,15 +45,17 @@ const Gameplay = () => {
    
     let addEntitiesInterval;
     if (state.score > 15) {
+     
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_ENEMY' });
-      }, 1000); 
-      
+      }, isMobile ? 4000 : 1000); 
     } else {
+     
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_ENEMY' });
-      }, 2000); 
+      }, isMobile ? 4000 : 2000); 
     }
+    
     const addEntitiesInterval2 = setInterval(() => {
       dispatch({ type: 'ADD_ENEMY_BULLET' });
       dispatch({ type: 'ADD_ASTEROID' });
@@ -56,7 +66,7 @@ const Gameplay = () => {
 
       
     }
-    }, 1000);
+    }, isMobile ? 1500 : 1000);
 
     
      
@@ -68,7 +78,7 @@ const Gameplay = () => {
       };
 
     
-  }, [dispatch, state.score, state.playerShrinking]);
+  }, [dispatch, state.score, state.playerShrinking, isMobile]);
 
   
 
@@ -86,9 +96,7 @@ const Gameplay = () => {
       }, 5000); 
     } 
     else {
-      addEntitiesInterval = setInterval(() => {
-        dispatch({ type: 'ADD_ASTEROID' });
-      }, 1000); 
+      return;
     }
    
   
