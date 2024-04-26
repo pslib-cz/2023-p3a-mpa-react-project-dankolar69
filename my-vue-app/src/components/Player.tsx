@@ -179,7 +179,10 @@ function getFlameImageByMovement(activeDirections: { [key: string]: boolean }) {
 }
 
 const Player: React.FC<PlayerProps> = ({ position }) => {
+  
   const { state, dispatch } = useContext(GameContext);
+  const lastBulletTime = useRef(0);
+  let bulletCooldown = state.upgrades.find(upgrade => upgrade.name === 'Fire rate' && upgrade.owned) ? 200 : 500;
   playerMovement();
   const flameImage = getFlameImageByMovement(state.activeDirections);
 
@@ -223,7 +226,14 @@ const Player: React.FC<PlayerProps> = ({ position }) => {
     };
 }, [dispatch]);
 
-
+// Funkce pro střelbu na mobilu
+const handleShoot = () => {
+  const currentTime = Date.now();
+  if (currentTime - lastBulletTime.current >= bulletCooldown) {
+    dispatch({ type: 'ADD_BULLET', payload: { playerPosition: state.playerPosition } });
+    lastBulletTime.current = currentTime;
+  }
+};
 
 
 
@@ -269,7 +279,9 @@ return (
         <div>
           
           <Joystick size={100} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
-          
+          <div className="mobile-controls">
+            <button onClick={handleShoot}>Shoot</button>
+          </div>
         </div>
       )}
   </div>
