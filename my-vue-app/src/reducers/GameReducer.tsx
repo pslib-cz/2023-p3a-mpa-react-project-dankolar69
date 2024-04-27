@@ -558,7 +558,13 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
               // Zpracování "výpadu" dolů
               if (isCharging) {
-                y += 50; // rychlost výpadu
+
+                // rychlost výpadu
+                if(isMobile) {
+                  y += 30;
+                }else {
+                  y += 50;
+                }
                 if (y >= window.innerHeight + 20) { // Dosáhnutí spodní části obrazovky
                   y = originalY ?? 0; 
                   isCharging = false;
@@ -581,8 +587,11 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 
                 if (!isCharging) {
                   
+                  if(isMobile) {
+                    x += ((direction as number) || 1) * 30; // rychlost pohybu do stran
+                  } else {
                   x += ((direction as number) || 1) * 70; // rychlost pohybu do stran
-                  console.log(direction)
+                  console.log(direction)}
                   
                   if (x <= 0) {
                     x = 0; 
