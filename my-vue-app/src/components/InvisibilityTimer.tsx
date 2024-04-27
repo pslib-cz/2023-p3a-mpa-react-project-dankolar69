@@ -3,7 +3,7 @@ import { GameContext } from "../providers/ContextProvider";
 
 const InvisibilityTimer = () => {
   const { state, dispatch } = useContext(GameContext);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
   const invisibilityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {

@@ -19,12 +19,12 @@ import { detectCollision } from '../reducers/GameReducer';
 const Gameplay = () => {
   const { state, dispatch } = useContext(GameContext);
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
  
   // Změna velikosti okna
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1000);
     };
 
     window.addEventListener('resize', handleResize);
@@ -66,7 +66,7 @@ const Gameplay = () => {
 
       
     }
-    }, isMobile ? 1500 : 1000);
+    }, isMobile ? 1500 : 500);
 
     
      
@@ -134,12 +134,18 @@ const Gameplay = () => {
 
   return (
     <div className="gameplay-container">
-      <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
-      <h2 style={{ color: 'white' }}>Currency: {state.currency}</h2>
-      <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
-      <InvincibilityTimer/>
-      <BigShotTimer />
-      <AudioPlayer  />
+      <h1>Score: {state.score}</h1>
+      <h2>Currency: {state.currency}</h2>
+      <h2>Lives: {state.lives}</h2>
+      <div className="invincibilityTimer">
+        <InvincibilityTimer/>
+      </div>
+      <div className="bigShotTimer">
+        <BigShotTimer />
+      </div>
+      <div className="audioPlayer">
+        <AudioPlayer />
+      </div>
 
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (

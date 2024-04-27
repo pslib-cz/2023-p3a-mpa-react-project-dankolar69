@@ -45,3 +45,15 @@
     
   }
 
+  .gameplay-container h1,
+.gameplay-container h2 {
+  position: relative;
+  z-index: 100;  
+  color: white;  
+}
+
+
+.invincibilityTimer, .bigShotTimer, .audioPlayer {
+  position: relative;
+  z-index: 100;
+}

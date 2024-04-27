@@ -64,8 +64,8 @@ type EnemyProps = {
     export const Enemy3: React.FC<EnemyProps> = ({ position }) => (
       <div className="enemy3" style={{
         position: 'absolute',
-        top: position.y - 80,
-        left: position.x - 50,
+        top: position.y,
+        left: position.x,
         height: '100px',
         width: '100px',
         transition: 'top 0.2s, left 0.2s',

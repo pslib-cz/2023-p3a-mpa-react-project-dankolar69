@@ -8,16 +8,20 @@ import asteroid2 from "../assets/images/asteroid2.png";
 
 
 //detekce kolize
-const playerWidth = 50;
-const playerHeight = 50;
-const asteroidWidth = 50; 
-const asteroidHeight = 50;
-const bulletWidth = 5; 
-const bulletHeight = 40;
-const enemyWidth = 100;
-const enemyHeight = 100;
-const bossWidth = 120;
-const bossHeight = 120;
+const isMobile = window.innerWidth <= 768; // Předpokládejme, že zařízení s šířkou <= 768px jsou mobilní
+const baseWidth = isMobile ? 375 : 1920; // Použijte menší základní šířku pro mobily a větší pro PC
+const scaleFactor = window.innerWidth / baseWidth;
+
+const playerWidth = 50 * scaleFactor;
+const playerHeight = 50 * scaleFactor;
+const asteroidWidth = 50 * scaleFactor;
+const asteroidHeight = 50 * scaleFactor;
+const bulletWidth = 5 * scaleFactor;
+const bulletHeight = 40 * scaleFactor;
+const enemyWidth = 100 * scaleFactor;
+const enemyHeight = 100 * scaleFactor;
+const bossWidth = 120 * scaleFactor;
+const bossHeight = 120 * scaleFactor;
 
 
 export function detectCollision(obj1: Position, obj2: Position, width1: number, height1: number, width2: number, height2: number, offsetX: number = 0, offsetY: number = 0) {

@@ -3,11 +3,14 @@
     background-size: cover; 
     background-position: center;
     position: fixed;
+    display: flex;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     z-index: 1; 
+    align-items: center;
+    justify-content: center;
 }
 .shop__container {
     display: flex;
@@ -18,9 +21,9 @@
   color: #fff; 
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  width: 50%; 
+ 
   max-width: 800px;
-  margin: 10em auto;
+padding: 20px;
   position: relative; 
   z-index: 2; 
   font-family: 'Orbitron', sans-serif;
@@ -94,3 +97,21 @@
     background-color: #FF5722; 
   }
   
+
+  @media screen and (max-width: 768px){
+    .shop__title {
+      font-size: 2em; 
+    }
+    .shop__item {
+      padding: 10px;
+      display: block; 
+      text-align: center;
+    }
+    .shop__item > h2{
+      font-size: 1.5em; 
+    }
+    .shop__list{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }

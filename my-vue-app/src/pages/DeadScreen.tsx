@@ -1,7 +1,7 @@
 import React from "react";
 import { useContext, useState } from 'react';
 import { GameContext } from '../providers/ContextProvider';
-import '../styles/Main.css';
+import '../styles/Dead.css';
 import { useNavigate } from 'react-router-dom';
 
 export type Score = {
@@ -40,7 +40,7 @@ const DeadScreen: React.FC = () => {
             <div className="game-over">
               <h2>Game Over</h2>
               <p>Your score: {state.score}</p>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} className="dead-form">
                 <input
                     type="text"
                     value={nickname}

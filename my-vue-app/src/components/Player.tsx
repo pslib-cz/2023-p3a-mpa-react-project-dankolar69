@@ -237,7 +237,7 @@ const handleShoot = () => {
 
 
 
-const isMobile = window.innerWidth < 768;
+const isMobile = window.innerWidth < 1000;
 return (
 
   <div className='player'>
@@ -261,6 +261,7 @@ return (
       />
       {flameImage && (
       <img
+        
         src={flameImage}
         alt="Flame"
         style={{
@@ -276,7 +277,7 @@ return (
       
       {isMobile && (
         
-        <div>
+        <div className='mobile-controls'>
           
           <Joystick size={100} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
           <div className="mobile-controls">
