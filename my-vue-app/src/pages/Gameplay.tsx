@@ -105,7 +105,7 @@ const Gameplay = () => {
 
   useEffect(() => {
     state.blackHoles.forEach(blackHole => {
-      if (detectCollision(state.playerPosition, blackHole, 50, 50, 100, 100)) {
+      if (detectCollision(state.playerPosition, blackHole, 50, 50, 50, 50)) {
           dispatch({ type: 'TRIGGER_BLACK_HOLE_EFFECT' });
       }
     });
