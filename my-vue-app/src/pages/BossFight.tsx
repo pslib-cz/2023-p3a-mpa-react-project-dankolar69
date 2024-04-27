@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/Gameplay.css";
+
 import Player from "../components/Player";
 import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
@@ -80,13 +81,23 @@ const BossFight: React.FC = () => {
     
     return (
         <div className="gameplay-container">
-            <h1 style={{ color: 'white' }}>Boss Fight</h1>
-            <h1 style={{ color: 'white' }}>Score: {state.score}</h1>
-            <h2 style={{ color: 'white' }}>Boss Phase: {state.bossPhase}</h2>
-            <h2 style={{ color: 'white' }}>Lives: {state.lives}</h2>
-            <InvincibilityTimer />
-            <BigShotTimer />
-            <AudioPlayer  />
+          
+            
+            <div className='gameplay-stats'>
+                <h1>Boss Fight</h1>
+                <h1>Score: {state.score}</h1>
+                <h2>Currency: {state.currency}</h2>
+                <h2>Lives: {state.lives}</h2>
+                <div className="invincibilityTimer">
+                  <InvincibilityTimer/>
+                </div>
+                <div className="bigShotTimer">
+                  <BigShotTimer />
+                </div>
+                <div className="audioPlayer">
+                  <AudioPlayer />
+                </div>
+          </div>
 
             
             <Player position={state.playerPosition} />

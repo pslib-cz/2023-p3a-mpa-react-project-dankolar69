@@ -37,10 +37,33 @@
     border-radius: 5px;
     transition: width 0.5s ease-out, transform 0.5s ease-out;
   }
-  
+  @media screen and (min-width: 1201px){
+    .gameplay-stats{
+      margin-left: 2em;
+    }
+    
+  }
   @media screen and (max-width: 1200px) {
     .gameplay-container {
       background-size: cover;
+    }
+    .gameplay-stats{
+      margin-left: 0.5em;
+      
+    }
+    .gameplay-stats h1{
+      font-size: 30px;
+    }
+    .gameplay-stats h2{
+      font-size: 15px;
+    }
+    .invincibilityTimer, .bigShotTimer, .audioPlayer {
+      font-size: 15px;
+      
+    }
+    .gameplay-stats button{
+      padding: 10px;
+      margin-bottom: 0.5em;
     }
     
   }
@@ -61,7 +84,23 @@
   user-select: none;            /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
   touch-action: manipulation;   /* Additional rule to prevent default actions caused by touch */
 }
-.invincibilityTimer, .bigShotTimer, .audioPlayer {
+.invincibilityTimer, .bigShotTimer {
   position: relative;
   z-index: 100;
+  
+}
+
+.audioPlayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+
+  color: white;
+  padding: 0.5em;
+  border-radius: 5px;
+  margin: 0.5em;
+}
+.gameplay-stats{
+  margin-bottom: 10em;
 }

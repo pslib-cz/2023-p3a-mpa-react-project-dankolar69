@@ -134,18 +134,22 @@ const Gameplay = () => {
 
   return (
     <div className="gameplay-container">
-      <h1>Score: {state.score}</h1>
-      <h2>Currency: {state.currency}</h2>
-      <h2>Lives: {state.lives}</h2>
-      <div className="invincibilityTimer">
-        <InvincibilityTimer/>
+      <div className='gameplay-stats'>
+        <h1>Score: {state.score}</h1>
+        <h2>Currency: {state.currency}</h2>
+        <h2>Lives: {state.lives}</h2>
+        <div className="invincibilityTimer">
+          <InvincibilityTimer/>
+        </div>
+        <div className="bigShotTimer">
+          <BigShotTimer />
+        </div>
+        <div className="audioPlayer">
+          <AudioPlayer />
+        </div>
       </div>
-      <div className="bigShotTimer">
-        <BigShotTimer />
-      </div>
-      <div className="audioPlayer">
-        <AudioPlayer />
-      </div>
+      
+      
 
       <Player  position={state.playerPosition} />
       {state.asteroids.map(asteroid => (
