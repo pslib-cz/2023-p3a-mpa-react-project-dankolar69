@@ -4,14 +4,17 @@ import App from './App.tsx'
 import './index.css'
 import { HashRouter } from 'react-router-dom'
 import { GameProvider } from './providers/ContextProvider.tsx'
+import { AudioPlayerProvider } from './providers/AudioPlayerProvider.tsx'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <HashRouter basename={"/"}>
     <GameProvider>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
+      <AudioPlayerProvider>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </AudioPlayerProvider>
     </GameProvider>
   </HashRouter>
  

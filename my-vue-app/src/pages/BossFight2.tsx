@@ -6,7 +6,7 @@ import { useContext, useEffect } from 'react';
 import { GameContext } from '../providers/ContextProvider';
 
 import {MegaBullet, Bullet} from "../components/Bullet";
-import { Boss1} from "../components/Boss";
+import { Boss2 } from "../components/Boss";
 import { Enemy3 } from "../components/Enemy";
 import { useNavigate } from "react-router-dom";
 import AudioPlayer from "../components/AudioPlayer";
@@ -26,7 +26,7 @@ const BossFight: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       
-      dispatch({ type: 'UPDATE_BOSSFIGHT_STATE'}); 
+      dispatch({ type: 'UPDATE_BOSSFIGHT_STATE2'}); 
       dispatch({ type: 'UPDATE_PLAYER_MOVEMENT'});
     }, 100); 
 
@@ -36,7 +36,7 @@ const BossFight: React.FC = () => {
   }, [dispatch]);
 
   
-  useEffect(() => {
+  /*useEffect(() => {
     
     const moveBoss = () => {
       // Zajištění, že se pohyb vyvolá pouze ve fázi 2 a boss není v procesu útoku (isCharging)
@@ -58,14 +58,14 @@ const BossFight: React.FC = () => {
   
   
     return () => clearInterval(intervalId);
-  }, [dispatch, state.bossPhase, state.bossPosition.isCharging]); 
+  }, [dispatch, state.bossPhase, state.bossPosition.isCharging]);*/ 
 
   // smrt hráče nebo pokračování do další fáze hry
   useEffect(() => {
     if (state.lives <= 0) {
       
       navigate('/dead');
-  } else if (state.bossLives <= 0 && state.bossPhase === 3) {
+  } else if (state.boss2lives <= 0 && state.boss2Phase === 3) {
       state.score + 3;
       dispatch({ type: 'PREPARE_FOR_CONTINUED_GAMEPLAY' }); 
       dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
@@ -77,7 +77,7 @@ const BossFight: React.FC = () => {
   });
 
   
-  const bossHealthWidth = (state.bossLives / 10) * 100 ;
+  const bossHealthWidth = (state.boss2lives / 10) * 100 ;
   
     
     return (
@@ -111,11 +111,11 @@ const BossFight: React.FC = () => {
       ))}
       
         
-        <div style={{  top: state.bossPosition.y - 55 , left: state.bossPosition.x +55 }} className="boss-health-bar-container">
+        <div style={{  top: state.boss2Position.y - 55 , left: state.boss2Position.x +55 }} className="boss-health-bar-container">
           <div className="boss-health-bar" style={{ width: bossHealthWidth }}></div>
         </div>
       
-        <Boss1 position={state.bossPosition} />
+        <Boss2 position={state.boss2Position} />
         
 
       {state.enemies.map(enemy => (enemy.type === 'enemy3' ? <Enemy3 key={enemy.id} position={enemy} /> : null))}

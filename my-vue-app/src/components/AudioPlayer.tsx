@@ -1,31 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import gameplayS2 from '../assets/audio/song2.mp3';
 import bossS1 from '../assets/audio/boss1.mp3';
+import bossS2 from '../assets/audio/boss2.mp3';
+import { AudioPlayerContext } from '../providers/AudioPlayerProvider';
+
+
 
 const AudioPlayer: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const {isPlaying, setIsPlaying} = useContext(AudioPlayerContext);
   const [audio] = useState<HTMLAudioElement>(new Audio());
 
+  
   const togglePlay = () => {
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false);
     } else {
       audio.play().then(() => {
         setIsPlaying(true);
       }).catch(e => {
         console.error('Playback failed.', e);
+        setIsPlaying(false);
       });
     }
     setIsPlaying(!isPlaying);
+    
   };
 
   useEffect(() => {
     const trackMap: Record<string, string> = {
       '/gameplay': gameplayS2,
       '/boss': bossS1,
+      '/boss2': bossS2,
     };
 
-    const hashPath = window.location.hash.replace(/^#/, ''); // Remove the hash
+    const hashPath = window.location.hash.replace(/^#/, ''); 
     const currentTrack = trackMap[hashPath];
 
     if (currentTrack) {
@@ -46,6 +55,7 @@ const AudioPlayer: React.FC = () => {
     return () => {
       audio.pause();
       audio.src = '';
+  
     };
   }, [window.location.hash, isPlaying]);
 

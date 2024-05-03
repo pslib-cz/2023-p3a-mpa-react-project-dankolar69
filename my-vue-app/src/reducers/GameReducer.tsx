@@ -72,6 +72,11 @@ type Position = {
     directionX?: number;
     directionY?: number;
     lastShotTime?: number;
+
+    //boss2
+    isTeleporting?: boolean;
+    
+    
     
     
 };
@@ -79,6 +84,7 @@ type Position = {
 export type GameState = {
   playerPosition: Position;
   bossPosition: Position;
+  boss2Position: Position;
   blackHoles: Position[];
   asteroids: Position[];
   bullets: Position[];
@@ -91,7 +97,10 @@ export type GameState = {
   bossLives: number;
   activeDirections: { [code: string]: boolean };
   bossPhase: number;
+  boss2Phase: number;
+  boss2lives: number;
   playerShrinking: boolean;
+  boss2TimerSet: boolean;
 
   //ability
   isInvincible: boolean;
@@ -101,9 +110,6 @@ export type GameState = {
   bigShotCooldown: boolean;
   bigShotCooldownTimeLeft: number,
 
-  // pro budoucí rozšíření
-  //currentLevel: number;
-  //unlockedLevels: number[];
   upgrades: Upgrade[];
   currency: number;
 };
@@ -117,6 +123,7 @@ export type GameAction =
   | {type: 'ADD_BLACKHOLE'}
   | { type: 'UPDATE_GAMEPLAY_STATE' }
   | { type: 'UPDATE_BOSSFIGHT_STATE' }
+  | { type: 'UPDATE_BOSSFIGHT_STATE2' }
   | { type: 'UPDATE_PLAYER_MOVEMENT', payload?: { moveRight: boolean; moveLeft: boolean; moveUp: boolean; moveDown: boolean; } }
   | { type: 'GAME_OVER' }
   | { type: 'RESET_GAME' }
@@ -146,6 +153,7 @@ export type GameAction =
   export const initialState: GameState = {
     playerPosition: { x: window.innerWidth /2, y: window.innerHeight / 2, id: uuidv4() },
     bossPosition: {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() },
+    boss2Position: {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() },
     blackHoles: [],
     asteroids: [],
     bullets: [],
@@ -156,9 +164,12 @@ export type GameAction =
     score: 0,
     lives: 3,
     bossLives: 10,
+    boss2Phase: 1,
+    boss2lives: 10,
     activeDirections: {},
     bossPhase: 1,
     playerShrinking: false,
+    boss2TimerSet: false,
 
     //ability
     isInvincible: false,
@@ -166,12 +177,8 @@ export type GameAction =
     invisibilityTimeLeft: 10,
     invisibilityCooldownTimeLeft: 30,
     bigShotCooldown: false,
-    
     bigShotCooldownTimeLeft: 30,
 
-    // pro budoucí rozšíření
-    //currentLevel: 1,
-    //unlockedLevels: [1],
     upgrades: JSON.parse(localStorage.getItem('upgrades') || JSON.stringify(upgrades)),
     currency: JSON.parse(localStorage.getItem('currency') as string) || 0
     
@@ -811,8 +818,119 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
                 return{...state, bossPosition: state.bossPosition,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, megaBullets: updatedMegaBullets, gameOver: gameOver, lives: newLives, bossLives: newBossLives, enemies: updatedEnemies, bossPhase: state.bossPhase};
         }
-      
+        
+        //aktualizace stavu boss fightu2
+        case 'UPDATE_BOSSFIGHT_STATE2':
+          let newBossLives = state.boss2lives;
+        if (state.boss2Phase === 1 && !state.boss2Position.isTeleporting && Math.random() < 0.1) {
+            // Boss teleports
+            state.boss2Position.x = Math.random() * (window.innerWidth - bossWidth);
+            state.boss2Position.y = Math.random() * (window.innerHeight - bossHeight);
+            state.boss2Position.isTeleporting = true;
+            setTimeout(() => {
+                state.boss2Position.isTeleporting = false;
+            }, 2000);  
 
+            if(state.boss2lives <= 0) {
+              state.boss2Phase = 2;
+              state.score+3;
+              newBossLives = 10;
+              state.boss2Position = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
+            }
+        }
+
+        
+        if (state.boss2Phase === 2) {
+          console.log(state.boss2Phase);
+          if (!state.boss2TimerSet) {
+            state.boss2TimerSet = true;
+            setInterval(() => {
+              if (state.boss2Phase === 2) {
+                
+                let deltaX = state.playerPosition.x - state.boss2Position.x;
+        let deltaY = state.playerPosition.y - state.boss2Position.y;
+
+        // Move boss towards the player by a fraction of the difference
+        // This fraction (0.5 in this case) can be adjusted for speed and smoothness of movement
+        state.boss2Position.x += deltaX * 0.5;
+        state.boss2Position.y += deltaY * 0.5;
+
+                if (detectCollision(state.boss2Position, state.playerPosition, bossWidth, bossHeight, playerWidth, playerHeight )) {
+                  newLives -= 1;
+                  state.boss2Position.x = window.innerWidth / 2;
+                  state.boss2TimerSet = false;
+              }
+            }
+            }, 2000);}
+          
+      
+    }
+
+    
+
+        
+        if (state.boss2Phase === 3) {
+            
+        }
+        //pohyb střel hráče + detekce kolize
+        let updatedBullets = state.bullets.map(bullet => ({
+          ...bullet,
+          y: bullet.y - 100, 
+        })).filter(bullet => {
+          
+          if (detectCollision(bullet, state.boss2Position, bulletWidth, bulletHeight, bossWidth, bossHeight, 0, 0)) {
+            newBossLives -= 1;
+            return null;
+          }
+          
+
+          if (bullet.y <= 0) {
+              return false;
+          }
+          
+          return true;
+        });; 
+        if (newLives <= 0 && !gameOver) {
+          gameOver = true;
+        }
+
+        // Big Shot
+        let updatedMegaBullets = state.megaBullets.map(megaBullet => ({
+          ...megaBullet,  
+          y: megaBullet.y - 100,
+        })).filter(megaBullet => {
+          if (megaBullet.y <= 0) {
+            return false;
+          }
+          if (detectCollision(megaBullet, state.boss2Position, bulletWidth, bulletHeight, bossWidth, bossHeight, 0, 0)) {
+            newBossLives -= 3;
+            return null;
+          }
+          return true;
+        });
+
+        
+        
+        //pohyb nepřátelských střel + detekce kolize
+        const updatedEnemyBullets = state.enemyBullets.map(bullet => {
+          const speed = bullet.type === 'enemy2' ? 60 : 30;
+          const newY = bullet.y + speed;
+  
+          if (
+            !state.isInvincible && detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
+          ) {
+              newLives -= 1;
+              return null;
+              
+          }
+  
+          return { ...bullet, y: newY };
+      }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
+
+
+            return{...state, boss2Position: state.boss2Position,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, megaBullets: updatedMegaBullets, gameOver: gameOver, lives: newLives, boss2lives: newBossLives, boss2Phase: state.boss2Phase};
+    
+        
         case 'UPDATE_PLAYER_MOVEMENT': {
             //pohyb hráče
             if (action.payload) {

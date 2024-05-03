@@ -127,6 +127,13 @@ const Gameplay = () => {
       state.enemyBullets = [];
       navigate('/boss');
     }
+    if (state.score == 15) {
+      dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
+      dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
+      dispatch({type: 'RESET_INVISIBILITY'})
+      state.enemyBullets = [];
+      navigate('/boss2');
+    }
   });
   
   
