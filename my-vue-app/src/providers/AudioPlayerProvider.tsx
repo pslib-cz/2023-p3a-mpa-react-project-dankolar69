@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useState } from 'react';
 
 export const AudioPlayerContext = React.createContext({
     isPlaying: false,
-    setIsPlaying: (isPlaying: boolean) => {},
+    setIsPlaying: (_isPlaying: boolean) => {},
   });
   
 
