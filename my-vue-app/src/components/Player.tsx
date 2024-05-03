@@ -240,7 +240,7 @@ const handleShoot = () => {
 const isMobile = window.innerWidth < 1000;
 return (
 
-  <div className='player'>
+  <div className='player no-select'>
     <img
     src={playerImage}
     alt="Player"

@@ -155,7 +155,7 @@ export type GameAction =
     gameOver: false,
     score: 0,
     lives: 3,
-    bossLives: 3,
+    bossLives: 10,
     activeDirections: {},
     bossPhase: 1,
     playerShrinking: false,
@@ -173,7 +173,7 @@ export type GameAction =
     //currentLevel: 1,
     //unlockedLevels: [1],
     upgrades: JSON.parse(localStorage.getItem('upgrades') || JSON.stringify(upgrades)),
-    currency: JSON.parse(localStorage.getItem('currency') as string) || 50
+    currency: JSON.parse(localStorage.getItem('currency') as string) || 0
     
 
   };
@@ -459,7 +459,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                     if (hitEnemyIndex !== -1) {
                     updatedEnemies.splice(hitEnemyIndex, 1); 
                     state.score += 1; 
-                    state.currency += 10;
+                    state.currency += 1;
                     return false; 
                     }
                 
@@ -486,7 +486,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               if (hitEnemyIndex !== -1) {
                 updatedEnemies.splice(hitEnemyIndex, 1); 
                 state.score += 1; 
-                state.currency += 10;
+                state.currency += 1;
                 return false; 
               }
               return true;
@@ -607,7 +607,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               state.bossPhase = 2;
               isCharging = false;
               state.score+3;
-              newBossLives = 3;
+              newBossLives = 10;
               state.bossPosition = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
             }
         
@@ -675,7 +675,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             }
             const currentTime = Date.now();
           
-            // Logic for 'Enemy3' shooting
+         
             state.enemies = state.enemies.map(enemy => {
               if (enemy.type === 'enemy3') {
                 const movementSpeed = 7;
@@ -687,16 +687,16 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   newX += (enemy.directionX??0 * movementSpeed) / steps;
                   newY += (enemy.directionY??0 * movementSpeed) / steps;
           
-                  // Check for collision after each small step
+                 
                   if (detectCollision({x: newX, y: newY, id: enemy.id}, state.playerPosition, enemyWidth, enemyHeight, playerWidth, playerHeight)) {
-                    // Handle collision (e.g., reduce lives, remove enemy, etc.)
+                    
                     console.log('Collision detected with player');
                     
                     break;
                   }
                 }
           
-                enemy.x = newX; // Update the position with the last valid position before collision
+                enemy.x = newX; 
                 enemy.y = newY;
           
                 // Shooting logic
@@ -704,7 +704,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                   const angle = Math.atan2(state.playerPosition.y - enemy.y, state.playerPosition.x - enemy.x);
                   const bulletSpeed = 5;
                   state.enemyBullets.push({
-                    x: enemy.x,
+                    x: enemy.x + 50,
                     y: enemy.y,
                     id: uuidv4(),
                     directionX: Math.cos(angle) * bulletSpeed,

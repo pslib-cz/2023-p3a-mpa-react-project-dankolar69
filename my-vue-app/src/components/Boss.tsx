@@ -10,7 +10,7 @@ type BossProps = {
 
   export const Boss1: React.FC<BossProps> = ({ position}) => (
     
-    <div className="boss" style={{
+    <div className="boss no-select" style={{
       position: 'absolute',
       top: position.y , 
       left: position.x , 

@@ -8,7 +8,7 @@ type AsteroidProps = {
 
 
 const Asteroid: React.FC<AsteroidProps> = ({ position, image }) => (
-  <div className='asteroid' style={{
+  <div className='asteroid no-select' style={{
     position: 'absolute',
     top: position.y,
     left: position.x,
