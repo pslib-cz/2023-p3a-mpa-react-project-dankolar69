@@ -81,7 +81,7 @@ const BossFight: React.FC = () => {
   
     
     return (
-        <div className="gameplay-container">
+        <div className="gameplay-container boss">
           
             
             <div className='gameplay-stats'>
