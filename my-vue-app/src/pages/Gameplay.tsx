@@ -44,11 +44,16 @@ const Gameplay = () => {
     
    
     let addEntitiesInterval;
-    if (state.score > 15) {
+    if (state.score > 30) {
+      addEntitiesInterval = setInterval(() => {
+        dispatch({ type: 'ADD_ENEMY' });
+      }, isMobile ? 2000 : 500);
+    } 
+    else if (state.score > 15) {
      
       addEntitiesInterval = setInterval(() => {
         dispatch({ type: 'ADD_ENEMY' });
-      }, isMobile ? 4000 : 1000); 
+      }, isMobile ? 3000 : 1000); 
     } else {
      
       addEntitiesInterval = setInterval(() => {
@@ -127,7 +132,7 @@ const Gameplay = () => {
       state.enemyBullets = [];
       navigate('/boss');
     }
-    if (state.score == 15) {
+    if (state.score == 30) {
       dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
       dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
       dispatch({type: 'RESET_INVISIBILITY'})

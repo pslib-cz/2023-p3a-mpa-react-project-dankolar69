@@ -101,6 +101,7 @@ export type GameState = {
   boss2lives: number;
   playerShrinking: boolean;
   boss2TimerSet: boolean;
+  boss2MovementTimer: NodeJS.Timeout | null;
 
   //ability
   isInvincible: boolean;
@@ -170,6 +171,7 @@ export type GameAction =
     bossPhase: 1,
     playerShrinking: false,
     boss2TimerSet: false,
+    boss2MovementTimer: null,
 
     //ability
     isInvincible: false,
@@ -550,7 +552,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           }
 
 
-        //aktualizace stavu boss fightu
+        //aktualizace stavu boss fightu 1
         case 'UPDATE_BOSSFIGHT_STATE': {
           let newBossLives = state.bossLives;
           
@@ -822,6 +824,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         //aktualizace stavu boss fightu2
         case 'UPDATE_BOSSFIGHT_STATE2':
           let newBossLives = state.boss2lives;
+
+          // Boss2 fáze 1
         if (state.boss2Phase === 1 && !state.boss2Position.isTeleporting && Math.random() < 0.1) {
             // Boss teleports
             state.boss2Position.x = Math.random() * (window.innerWidth - bossWidth);
@@ -839,39 +843,61 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             }
         }
 
-        
+        // Boss2 fáze 2
         if (state.boss2Phase === 2) {
-          console.log(state.boss2Phase);
-          if (!state.boss2TimerSet) {
-            state.boss2TimerSet = true;
-            setInterval(() => {
-              if (state.boss2Phase === 2) {
-                
-                let deltaX = state.playerPosition.x - state.boss2Position.x;
-        let deltaY = state.playerPosition.y - state.boss2Position.y;
 
-        // Move boss towards the player by a fraction of the difference
-        // This fraction (0.5 in this case) can be adjusted for speed and smoothness of movement
-        state.boss2Position.x += deltaX * 0.5;
-        state.boss2Position.y += deltaY * 0.5;
-
-                if (detectCollision(state.boss2Position, state.playerPosition, bossWidth, bossHeight, playerWidth, playerHeight )) {
-                  newLives -= 1;
-                  state.boss2Position.x = window.innerWidth / 2;
-                  state.boss2TimerSet = false;
-              }
+          //Boss2 se snaží hráče zasáhnout
+          if (!state.isInvincible && detectCollision(state.boss2Position, state.playerPosition, bossWidth, bossHeight, playerWidth, playerHeight, 20, -50)) {
+            
+            newLives -= 1;
+            state.boss2Position.x = window.innerWidth / 2; 
+            if (state.boss2MovementTimer) {
+              clearInterval(state.boss2MovementTimer); 
             }
-            }, 2000);}
+            state.boss2TimerSet = false;
+          }
+          //pohyb bosse směrem k hráči
+          state.boss2MovementTimer = setInterval(() => {
+            let deltaX = state.playerPosition.x - state.boss2Position.x;
+            let deltaY = state.playerPosition.y - state.boss2Position.y;
+            let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            if (distance < 5) {  
+                return;
+            }
+
+            let directionX = deltaX / distance;
+            let directionY = deltaY / distance;
+
+            let baseSpeed = 10; 
+            let dampingFactor = 1 - Math.min(distance / 200, 1); 
+
+            let moveSpeed = baseSpeed * (1 - dampingFactor); 
+
+            let newX = state.boss2Position.x + directionX * moveSpeed;
+            let newY = state.boss2Position.y + directionY * moveSpeed;
+
+          
+            newX = Math.max(0, Math.min(newX, window.innerWidth - bossWidth));
+            newY = Math.max(0, Math.min(newY, window.innerHeight - bossHeight));
+
+            state.boss2Position.x = newX;
+            state.boss2Position.y = newY;
+
+            console.log("Updated boss position:", newX, newY, "with speed:", moveSpeed);
+        }, 50);
           
       
     }
 
     
 
-        
+        // Boss2 fáze 3
         if (state.boss2Phase === 3) {
             
         }
+
+        
         //pohyb střel hráče + detekce kolize
         let updatedBullets = state.bullets.map(bullet => ({
           ...bullet,
