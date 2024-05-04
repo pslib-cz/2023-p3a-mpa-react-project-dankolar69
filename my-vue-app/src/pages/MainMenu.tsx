@@ -25,6 +25,9 @@ import { Link } from "react-router-dom";
                     Shop
                 </button>
             </Link>
+            <div className="author">
+                <p>Author: Dan Kolář</p>
+            </div>
             
         </div>
     );
