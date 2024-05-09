@@ -3,7 +3,7 @@
 import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
-import { stat } from "fs";
+
 
 
 
