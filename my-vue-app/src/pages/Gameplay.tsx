@@ -130,7 +130,7 @@ const Gameplay = () => {
       dispatch({type: 'RESET_INVISIBILITY_COOLDOWN'})
       dispatch({type: 'RESET_INVISIBILITY'})
       state.enemyBullets = [];
-      navigate('/boss2');
+      navigate('/boss');
     }
     else if (state.score == 30) {
       dispatch({type: 'RESET_BIG_SHOT_COOLDOWN'})
