@@ -101,7 +101,7 @@ export type GameState = {
   boss2lives: number;
   playerShrinking: boolean;
   boss2TimerSet: boolean;
-  boss2MovementTimer: NodeJS.Timeout | null;
+  
 
   //ability
   isInvincible: boolean;
@@ -171,7 +171,7 @@ export type GameAction =
     bossPhase: 1,
     playerShrinking: false,
     boss2TimerSet: false,
-    boss2MovementTimer: null,
+    
 
     //ability
     isInvincible: false,
@@ -846,49 +846,61 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         // Boss2 fáze 2
         if (state.boss2Phase === 2) {
 
-          //Boss2 se snaží hráče zasáhnout
-          if (!state.isInvincible && detectCollision(state.boss2Position, state.playerPosition, bossWidth, bossHeight, playerWidth, playerHeight, 20, -50)) {
-            
-            newLives -= 1;
-            state.boss2Position.x = window.innerWidth / 2; 
-            if (state.boss2MovementTimer) {
-              clearInterval(state.boss2MovementTimer); 
-            }
-            state.boss2TimerSet = false;
-          }
-          //pohyb bosse směrem k hráči
-          state.boss2MovementTimer = setInterval(() => {
-            let deltaX = state.playerPosition.x - state.boss2Position.x;
-            let deltaY = state.playerPosition.y - state.boss2Position.y;
-            let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-            if (distance < 5) {  
-                return;
-            }
-
-            let directionX = deltaX / distance;
-            let directionY = deltaY / distance;
-
-            let baseSpeed = 10; 
-            let dampingFactor = 1 - Math.min(distance / 200, 1); 
-
-            let moveSpeed = baseSpeed * (1 - dampingFactor); 
-
-            let newX = state.boss2Position.x + directionX * moveSpeed;
-            let newY = state.boss2Position.y + directionY * moveSpeed;
-
+          let { hasCollided } = state.boss2Position;
           
-            newX = Math.max(0, Math.min(newX, window.innerWidth - bossWidth));
-            newY = Math.max(0, Math.min(newY, window.innerHeight - bossHeight));
+          //Boss2 se snaží hráče zasáhnout
+          
+          let moveSpeed;
+          if (isMobile) {
+            moveSpeed = 7;
+          } else {
+            moveSpeed = 15;
+          }
 
-            state.boss2Position.x = newX;
-            state.boss2Position.y = newY;
+          const deltaX = state.playerPosition.x - state.boss2Position.x;
+          const deltaY = state.playerPosition.y - state.boss2Position.y;
 
-            console.log("Updated boss position:", newX, newY, "with speed:", moveSpeed);
-        }, 50);
+          const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          const moveX = (deltaX / distance) * moveSpeed;
+          const moveY = (deltaY / distance) * moveSpeed;
+      
+          
+          state.boss2Position.x += moveX;
+          state.boss2Position.y += moveY;
+      
+         
+          if (!state.isInvincible && !hasCollided && detectCollision(state.boss2Position, state.playerPosition, bossWidth, bossHeight, playerWidth, playerHeight, 0, -10)) {
+            state.boss2Position.hasCollided = true;  
+            newLives -= 1;
+            console.log("Player hit! Lives left: ", newLives);
+    
+            if (newLives <= 0) {
+                console.log("Player is dead. Stop the boss.");
+               
+            }
+    
+          
+            state.boss2Position.x -= moveX * 2.5; 
+            state.boss2Position.y -= moveY * 2.5;
+    
+           
+               
+            
+        } else if (state.boss2Position.hasCollided) {
+
+            // když se hráč snaží utéct boss resetuje po úspěšném útoku pozici
+            if (distance > 50) { 
+              state.boss2Position = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
+                state.boss2Position.hasCollided = false;
+            }
+        }
+          
+        }
+    
+        
           
       
-    }
+    
 
     
 
