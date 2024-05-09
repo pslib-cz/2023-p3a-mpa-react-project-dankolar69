@@ -36,11 +36,11 @@ const BossFight: React.FC = () => {
   }, [dispatch]);
 
   
-  /*useEffect(() => {
+  useEffect(() => {
     
     const moveBoss = () => {
-      // Zajištění, že se pohyb vyvolá pouze ve fázi 2 a boss není v procesu útoku (isCharging)
-      if (state.bossPhase === 2 && !state.bossPosition.isCharging || state.bossPhase === 3 && !state.bossPosition.isCharging) {
+      // Zajištění, že se pohyb vyvolá pouze ve fázi 3
+      if (state.boss2Phase === 3) {
         const directions = ['up', 'down', 'left', 'right'];
         const direction = directions[Math.floor(Math.random() * directions.length)];
         dispatch({
@@ -58,7 +58,7 @@ const BossFight: React.FC = () => {
   
   
     return () => clearInterval(intervalId);
-  }, [dispatch, state.bossPhase, state.bossPosition.isCharging]);*/ 
+  }, [dispatch, state.boss2Phase]);
 
   // smrt hráče nebo pokračování do další fáze hry
   useEffect(() => {

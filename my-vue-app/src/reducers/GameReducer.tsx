@@ -3,13 +3,14 @@
 import { v4 as uuidv4 } from "uuid";
 import asteroid1 from "../assets/images/asteroid1.png";
 import asteroid2 from "../assets/images/asteroid2.png";
+import { stat } from "fs";
 
 
 
 
-//detekce kolize
-const isMobile = window.innerWidth <= 768; // Předpokládejme, že zařízení s šířkou <= 768px jsou mobilní
-const baseWidth = isMobile ? 375 : 1920; // Použijte menší základní šířku pro mobily a větší pro PC
+//detekce kolize, škálování kvůli responzivitě
+const isMobile = window.innerWidth <= 768; 
+const baseWidth = isMobile ? 375 : 1920;
 const scaleFactor = window.innerWidth / baseWidth;
 
 const playerWidth = 50 * scaleFactor;
@@ -72,6 +73,7 @@ type Position = {
     directionX?: number;
     directionY?: number;
     lastShotTime?: number;
+    Bulletsdirection?: 'down' | 'diagonalLeft' | 'diagonalRight'|string;
 
     //boss2
     isTeleporting?: boolean;
@@ -824,6 +826,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         //aktualizace stavu boss fightu2
         case 'UPDATE_BOSSFIGHT_STATE2':
           let newBossLives = state.boss2lives;
+          
 
           // Boss2 fáze 1
         if (state.boss2Phase === 1 && !state.boss2Position.isTeleporting && Math.random() < 0.1) {
@@ -837,14 +840,14 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
             if(state.boss2lives <= 0) {
               state.boss2Phase = 2;
-              state.score+3;
+             
               newBossLives = 10;
               state.boss2Position = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
             }
         }
 
         // Boss2 fáze 2
-        if (state.boss2Phase === 2) {
+        else if (state.boss2Phase === 2) {
 
           let { hasCollided } = state.boss2Position;
           
@@ -894,6 +897,13 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 state.boss2Position.hasCollided = false;
             }
         }
+        if(state.boss2lives <= 0 && state.boss2Phase === 2) {
+          state.boss2Phase = 3;
+          
+          newBossLives = 10;
+          state.boss2Position = {x: window.innerWidth / 2, y: window.innerHeight/3, id: uuidv4() };
+        }
+        state.boss2Position = { ...state.boss2Position, hasCollided};
           
         }
     
@@ -905,9 +915,24 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     
 
         // Boss2 fáze 3
-        if (state.boss2Phase === 3) {
-            
-        }
+        else if (state.boss2Phase === 3 ) {
+          //Boss střílí střely do všech směrů
+
+          //pokud je hráč v dosahu bossa, boss začne střílet
+          const xDifference = Math.abs(state.boss2Position.x - state.playerPosition.x);
+          const range = 30;
+
+          if(xDifference <= range ) {
+
+          const bossBullets = [
+            { id: uuidv4(), x: state.boss2Position.x + 30, y: state.boss2Position.y + 10, type: 'enemy', Bulletsdirection: 'down' },
+            { id: uuidv4(), x: state.boss2Position.x + 30, y: state.boss2Position.y + 10, type: 'enemy', Bulletsdirection: 'diagonalLeft' },
+            { id: uuidv4(), x: state.boss2Position.x + 30, y: state.boss2Position.y + 10, type: 'enemy', Bulletsdirection: 'diagonalRight' }
+        ];
+
+        // Přidání střel do pole nepřátelských střel
+        state.enemyBullets.push(...bossBullets);
+        }}
 
         
         //pohyb střel hráče + detekce kolize
@@ -952,8 +977,23 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         //pohyb nepřátelských střel + detekce kolize
         const updatedEnemyBullets = state.enemyBullets.map(bullet => {
           const speed = bullet.type === 'enemy2' ? 60 : 30;
-          const newY = bullet.y + speed;
-  
+          let newY = bullet.y + speed;
+          
+          switch (bullet.Bulletsdirection) {
+            case 'down':
+              newY += 30;  // Speed of the bullet going down
+              break;
+            case 'diagonalLeft':
+              newY += 30;
+              bullet.x -= 15;  // Speed of the bullet going diagonally left
+              break;
+            case 'diagonalRight':
+              newY += 30;
+              bullet.x += 15;  // Speed of the bullet going diagonally right
+              break;
+            default:
+              newY += 30;  // Default movement downward
+          }
           if (
             !state.isInvincible && detectCollision({ x: state.playerPosition.x, y: state.playerPosition.y, id: ''}, { x: bullet.x, y: newY, id: ''}, playerWidth, playerHeight, bulletWidth, bulletHeight)
           ) {
@@ -961,9 +1001,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
               return null;
               
           }
-  
           return { ...bullet, y: newY };
       }).filter((bullet) : bullet is Position => bullet !== null && bullet.y <= window.innerHeight);
+        
+       
 
 
             return{...state, boss2Position: state.boss2Position,enemyBullets:updatedEnemyBullets, bullets: updatedBullets, megaBullets: updatedMegaBullets, gameOver: gameOver, lives: newLives, boss2lives: newBossLives, boss2Phase: state.boss2Phase};
@@ -996,7 +1037,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             if(state.bossPhase === 2 || state.bossPhase === 3) {
             
             const { direction, movementSpeed } = action.payload;
-            let { x, y } = state.bossPosition;
+            let { x, y } = state.bossPosition
         
             switch (direction) {
               case 'up': y -= movementSpeed; break;
@@ -1023,10 +1064,37 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
               return {
                 ...state,
-                bossPosition: { ...state.bossPosition, x, y, isCharging: false }
+                bossPosition: { ...state.bossPosition, x, y, isCharging: false },
+                
+              };
+            }
+            else if (state.boss2Phase === 3) {
+              const { direction, movementSpeed } = action.payload;
+              let { x, y } = state.boss2Position; // Correctly reference boss2Position
+          
+              switch (direction) {
+                case 'up': y -= movementSpeed; break;
+                case 'down': y += movementSpeed; break;
+                case 'left': x -= movementSpeed; break;
+                case 'right': x += movementSpeed; break;
+              }
+          
+              
+
+              const screenHeight = window.innerHeight;
+              if (y > screenHeight / 2) {
+                y -= movementSpeed; 
+              } 
+              x = Math.max(0, Math.min(window.innerWidth - bossWidth, x));
+              y = Math.max(0, Math.min(screenHeight / 2, y)); 
+          
+              return {
+                ...state,
+                boss2Position: { ...state.boss2Position, x, y } // Only update boss2Position
               };
             }
             return state;
+      
         }
         case 'TRIGGER_BLACK_HOLE_EFFECT':
             return {
