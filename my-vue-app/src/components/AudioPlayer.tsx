@@ -3,12 +3,14 @@ import gameplayS2 from '../assets/audio/song2.mp3';
 import bossS1 from '../assets/audio/boss1.mp3';
 import bossS2 from '../assets/audio/boss2.mp3';
 import { AudioPlayerContext } from '../providers/AudioPlayerProvider';
+import { useLocation } from 'react-router-dom';
 
 
 
 const AudioPlayer: React.FC = () => {
   const {isPlaying, setIsPlaying} = useContext(AudioPlayerContext);
   const [audio] = useState<HTMLAudioElement>(new Audio());
+  const location = useLocation();
 
   
   const togglePlay = () => {
@@ -34,8 +36,8 @@ const AudioPlayer: React.FC = () => {
       '/boss2': bossS2,
     };
 
-    const hashPath = window.location.hash.replace(/^#/, ''); 
-    const currentTrack = trackMap[hashPath];
+    
+    const currentTrack = trackMap[location.pathname];
 
     if (currentTrack) {
       audio.pause();
@@ -57,7 +59,7 @@ const AudioPlayer: React.FC = () => {
       audio.src = '';
   
     };
-  }, [window.location.hash, isPlaying]);
+  }, [location.pathname, isPlaying]);
 
   return (
     <div>
