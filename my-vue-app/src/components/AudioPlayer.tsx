@@ -11,6 +11,7 @@ const AudioPlayer: React.FC = () => {
   const {isPlaying, setIsPlaying} = useContext(AudioPlayerContext);
   const [audio] = useState<HTMLAudioElement>(new Audio());
   const location = useLocation();
+  
 
   
   const togglePlay = () => {
