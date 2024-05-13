@@ -279,7 +279,7 @@ return (
         
         <div className='mobile-controls no-select'>
           
-          <Joystick size={100} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
+          <Joystick size={75} baseColor="#ccc" stickColor="#ddd" move={handleMove} stop={handleStop} />
           <div className="mobile-controls">
             <button onClick={handleShoot}>Shoot</button>
           </div>
