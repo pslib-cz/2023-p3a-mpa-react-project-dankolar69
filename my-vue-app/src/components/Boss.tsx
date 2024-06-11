@@ -1,6 +1,6 @@
 import React from "react";
 import boss1 from "../assets/images/boss1.png";
-import boss2 from "../assets/images/boss2.png";
+import boss2 from "../assets/images/Boss2.png";
 
 type BossProps = {
     position: { x: number; y: number; };
