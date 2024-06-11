@@ -1,0 +1,117 @@
+.shop__bg{
+    background-image: url('../assets/images/shopBG.jpg'); 
+    background-size: cover; 
+    background-position: center;
+    position: fixed;
+    display: flex;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; 
+    align-items: center;
+    justify-content: center;
+}
+.shop__container {
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #333;
+  color: #fff; 
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+ 
+  max-width: 800px;
+padding: 20px;
+  position: relative; 
+  z-index: 2; 
+  font-family: 'Orbitron', sans-serif;
+    
+    
+  }
+  
+  
+  .shop__title {
+    color: #4CAF50; 
+    margin-bottom: 20px; 
+    font-size: 2em; 
+  }
+  
+  
+  .shop__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%; 
+  }
+  
+ 
+  .shop__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #444;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease; 
+  }
+  
+  .shop__item:hover {
+    transform: translateY(-5px);
+  }
+  
+  
+  .shop__item button, .shop__back__button {
+    padding: 10px 20px;
+    background-color: #4CAF50; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .shop__item button:hover, .shop__back__button:hover {
+    background-color: #66BB6A; 
+    transform: scale(1.05); 
+  }
+  
+  
+  .shop__item button:disabled {
+    background-color: #A5D6A7; 
+    color: #C8E6C9;
+    cursor: not-allowed;
+  }
+  
+  
+  .shop__back__button {
+    background-color: #FF7043; 
+    margin-top: 30px; 
+  }
+  
+  .shop__back__button:hover {
+    background-color: #FF5722; 
+  }
+  
+
+  @media screen and (max-width: 768px){
+    .shop__title {
+      font-size: 2em; 
+    }
+    .shop__item {
+      padding: 10px;
+      display: block; 
+      text-align: center;
+    }
+    .shop__item > h2{
+      font-size: 1.5em; 
+    }
+    .shop__list{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
